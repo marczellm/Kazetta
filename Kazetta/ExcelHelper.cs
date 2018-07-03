@@ -21,90 +21,55 @@ namespace Kazetta
         {
             var excel = new Microsoft.Office.Interop.Excel.Application();
             Workbook file = excel.Workbooks.Open(filename);
-            try
+            var SexMapping = new Dictionary<String, Sex>
             {
-                bool isHVKezelo = file.Worksheets.Cast<Worksheet>().Any(s => s.Name == "Alapadatok");
-                Worksheet sheet = isHVKezelo ? file.Worksheets["Alapadatok"] : file.Worksheets[1];
-                sheet.Unprotect();
-                Range range = sheet.UsedRange,
-                 col1 = range.Columns[1],
-                 col2 = range.Columns[2];
+                { "Nő", Sex.Female },
+                { "Férfi", Sex.Male }
+            };
+            var LevelMapping = new Dictionary<String, Level>
+            {
+                { "Alapszint", Level.Beginner },
+                { "Középhaladó", Level.Intermediate },
+                { "Haladó", Level.Advanced}
+            };
+            var InstrumentMapping = new Dictionary<String, Instrument>
+            {
+                { "Akusztikus gitár", Instrument.Guitar },
+                { "Basszusgitár", Instrument.Bass },
+                { "Kórusének", Instrument.Voice },
+                { "Szólóének", Instrument.Voice },
+                { "Zongora, billentyűs hangszerek", Instrument.Keyboards },
+                { "Dallamhangszer (fuvola, hegedű, cselló stb.)", Instrument.Solo },
+                { "Ütőhangszerek", Instrument.Percussion }
+            };
+            try
+            {                
+                Worksheet sheet = file.Worksheets[1];                
                 List<Person> ppl = new List<Person>();
-                foreach (string val in col1.Value)
-                    ppl.Add(new Person { Name = val });
-                if (col1.Count == col2.Count)
+
+                
+                foreach(Range row in sheet.UsedRange.Rows)
                 {
-                    int i = 0;
-                    foreach (string n in col2.Value)
-                        ppl[i++].Name += " " + n;
+                    if (row.Row == 1)
+                        continue;
+                    Range col = row.Columns;
+                    var instrument = col[17].Value;
+                    if (instrument == null)
+                        break;
+                    var person = new Person
+                    {
+                        Name = col[3].Value,
+                        Sex = SexMapping[col[4].Value],                        
+                        Level = LevelMapping[col[18].Value],
+                        VocalistToo = col[19].Value != "Nem"
+                    };
+                    if (InstrumentMapping.ContainsKey(instrument))
+                        person.Instrument = InstrumentMapping[instrument];
+                    else if (instrument.ToString().Contains("dallamh"))
+                        person.Instrument = Instrument.Solo;
+                    ppl.Add(person);
                 }
-                ppl.RemoveAll(s => String.IsNullOrWhiteSpace(s.Name));
-                Person fiuvezeto = null, lanyvezeto = null;
-                if (isHVKezelo || MessageBox.Show("Hétvége kezelő formátum?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    int i = 0;                    
-                    i = 0;
-                    foreach (var s in range.Columns[4].Value)
-                    {// Type of participant
-                        if (i >= ppl.Count)
-                            break;
-                        int x = 0;
-                        if (s is string)
-                            Int32.TryParse(s, out x);
-                        else if (s is double || s is int)
-                            x = (int)s;
-                        //if (enum.isdefined(typeof(persontype), x))
-                        //{
-                        //    var type = (persontype)x;
-                        //    ppl[i].type = type;
-                        //    if (type == persontype.lanyvezeto)
-                        //    {
-                        //        ppl[i].nem = sex.female;
-                        //        lanyvezeto = ppl[i];
-                        //    }
-                        //    else if (type == persontype.fiuvezeto)
-                        //    {
-                        //        ppl[i].nem = sex.male;
-                        //        fiuvezeto = ppl[i];
-                        //    }
-                        //}
-                        i++;
-                    }
-                    i = 0;
-                    foreach (var s in range.Columns[5].Value)
-                    {// Sharing group
-                        if (i >= ppl.Count)
-                            break;
-                        int x = 0;
-                        if (s is string)
-                            Int32.TryParse(s, out x);
-                        else if (s is double || s is int)
-                            x = (int)s;
-                        if (x != 0)
-                            ppl[i].Band = x - 1;
-                        i++;
-                    }
-                    i = 0;
-                    foreach (var s in range.Columns[7].Value)
-                    {// Sleeping group
-                        if (i >= ppl.Count)
-                            break;
-                        int x = -1;
-                        if (s != null && s is string)
-                            x = Encoding.ASCII.GetBytes(s)[0] - 65;
-                        if (x != -1)
-                            ppl[i].Room = x;
-                        i++;
-                    }                    
-                }
-                if (ppl[0].Name.Contains("név"))
-                    ppl.RemoveAt(0);
-                if (fiuvezeto != null && fiuvezeto.Room != -1)
-                    foreach (var p in ppl.Where(q => q.Room == fiuvezeto.Room))
-                        p.Sex = Sex.Male;
-                if (lanyvezeto != null && lanyvezeto.Room != -1)
-                    foreach (var p in ppl.Where(q => q.Room == lanyvezeto.Room))
-                        p.Sex = Sex.Female;
+
                 return ppl;
             }
             finally

@@ -123,7 +123,7 @@ namespace Kazetta
                     try { return ExcelHelper.LoadXLS(dialog.FileName); }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Hiba az Excel fájl olvasásakor" + Environment.NewLine + ex.Message ?? "" + Environment.NewLine + ex.InnerException?.Message ?? "");
+                        MessageBox.Show("Hiba az Excel fájl olvasásakor" + Environment.NewLine + ex.Message ?? "" + Environment.NewLine + ex.InnerException?.Message ?? "");                        
                         return new List<Person>();
                     }
                 }));

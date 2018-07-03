@@ -10,7 +10,7 @@ namespace Kazetta
     public enum Sex { Male, Female }
 
     [Serializable]
-    public class Person: ViewModelBase
+    public class Person : ViewModelBase
     {
         public string Name { get; set; }
 
@@ -53,11 +53,17 @@ namespace Kazetta
             get { return instrument; }
             set { instrument = value; RaisePropertyChanged(); }
         }
+        private Level level;
+        public Level Level
+        {
+            get { return level; }
+            set { level = value; RaisePropertyChanged(); }
+        }
         public bool VocalistToo { get; set; }
         public bool Vocalist => VocalistToo || Instrument == Instrument.Voice;
-        
+
         private int band = -1;
-        
+
         /// <summary>Zero-based</summary>
         public int Band
         {
@@ -76,12 +82,12 @@ namespace Kazetta
         {
             return Name;
         }
-        
+
         /// <summary>
         /// These will be filled out by <see cref="Algorithms.ConvertEdges"/> 
         /// </summary>
         internal HashSet<Person> kivelIgen = new HashSet<Person>(), kivelNem = new HashSet<Person>();
-        
+
         /// <summary>
         /// Traverse the graphs defined by kivelIgen and kivelNem.
         /// Collect the transitively related nodes into these sets so that no further recursive traversal is needed during the algorithm.
@@ -91,7 +97,7 @@ namespace Kazetta
             HashSet<Person> visitedSet = new HashSet<Person>();
             Queue<Person> queue = new Queue<Person>();
             foreach (Person p in kivelIgen)
-                queue.Enqueue(p);            
+                queue.Enqueue(p);
             while (queue.Count > 0)
             {
                 Person p = queue.Dequeue();

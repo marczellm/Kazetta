@@ -2,7 +2,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:view="clr-namespace:Kazetta.View"
-    xmlns:main="clr-namespace:Kazetta"
     xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop">
 
     <!-- Definition of the drag-and-drop enabled ItemsControl -->
@@ -39,27 +38,6 @@
                                                 <Condition Binding="{Binding Alvocsoportvezeto}" Value="True"/>
                                             </MultiDataTrigger.Conditions>
                                             <Setter Property="FontWeight" Value="Bold"/>
-                                        </MultiDataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ColorUjoncs, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
-                                                <Condition Binding="{Binding Type}" Value="{x:Static main:PersonType.Ujonc}"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Foreground" Value="Green"/>
-                                        </MultiDataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ColorLeaders, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
-                                                <Condition Binding="{Binding Type}" Value="{x:Static main:PersonType.Fiuvezeto}"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Foreground" Value="Blue"/>
-                                        </MultiDataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding ColorLeaders, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
-                                                <Condition Binding="{Binding Type}" Value="{x:Static main:PersonType.Lanyvezeto}"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Foreground" Value="Blue"/>
                                         </MultiDataTrigger>
                                         <DataTrigger Binding="{Binding ColorKiscsoports, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True">
                                             <Setter Property="Background">

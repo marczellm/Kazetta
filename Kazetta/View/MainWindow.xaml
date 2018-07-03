@@ -154,13 +154,9 @@
                         <DataGridTextColumn Binding="{Binding Name}" Header="Név" IsReadOnly="True"/>
                         <DataGridComboBoxColumn Header="Kinek az újonca" x:Name="ComboBoxColumn" CanUserReorder="False"
                                                 ItemsSource="{Binding DataContext.Team, Source={StaticResource DataContextProxy}}" 
-                                                SelectedItemBinding="{Binding KinekAzUjonca, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}">
-                            <DataGridComboBoxColumn.EditingElementStyle>
-                                <Style TargetType="{x:Type ComboBox}">
-                                    <EventSetter Event="SelectionChanged"/>
-                                </Style>
-                            </DataGridComboBoxColumn.EditingElementStyle>
-                        </DataGridComboBoxColumn>
+                                                SelectedItemBinding="{Binding KinekAzUjonca, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+
+
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>
