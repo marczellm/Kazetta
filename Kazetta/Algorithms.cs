@@ -22,7 +22,7 @@ namespace Kazetta
         /// Convert the standalone Edge representation of constraints
         /// to one that lists incompatible and must-go-together people in properties of the Person object.
         /// 
-        /// This new representation also includes additional inferred constraints from Ujoncok and MutuallyExclusiveGroups.
+        /// This new representation also includes additional inferred constraints from band names
         /// </summary>
         private void ConvertEdges()
         {
@@ -39,6 +39,13 @@ namespace Kazetta
                     e.Persons[1].kivelNem.Add(e.Persons[0]);
                 }                
             }
+            foreach (Person p in d.People)
+                foreach (Person q in d.People)
+                    if (p != q && p.BandName == q.BandName)
+                    {
+                        p.kivelIgen.Add(q);
+                        q.kivelIgen.Add(p);
+                    }
             foreach (Person p in d.People)
                 p.CollectRecursiveEdges();
         }

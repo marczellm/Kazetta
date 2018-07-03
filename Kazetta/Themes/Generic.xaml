@@ -24,21 +24,7 @@
                         <Label Content="{Binding Name}" Margin="0,0,5,5" Padding="3" Name="PersonButton" BorderThickness="2">
                             <Label.Style>
                                 <Style TargetType="Label">
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding BoldKiscsoportvezetok, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
-                                                <Condition Binding="{Binding Kiscsoportvezeto}" Value="True"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </MultiDataTrigger>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding BoldAlvocsoportvezetok, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
-                                                <Condition Binding="{Binding Alvocsoportvezeto}" Value="True"/>
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </MultiDataTrigger>
+                                    <Style.Triggers>                                        
                                         <DataTrigger Binding="{Binding ColorKiscsoports, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True">
                                             <Setter Property="Background">
                                                 <Setter.Value>
@@ -79,7 +65,6 @@
                                     <Style.Triggers>
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding Kiscsoportvezeto}" Value="False"/>
                                                 <Condition Binding="{Binding Pinnable, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
                                                 <Condition Binding="{Binding DataContext.MagicEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True"/>
                                             </MultiDataTrigger.Conditions>

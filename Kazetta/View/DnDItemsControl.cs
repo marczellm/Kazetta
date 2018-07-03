@@ -24,15 +24,7 @@ namespace Kazetta.View
 
         public bool VisualizeConflicts { get; set; } = false;
         public static readonly DependencyProperty VisualizeConflictsProperty =
-            DependencyProperty.Register("VisualizeConflicts", typeof(bool), typeof(DnDItemsControl));
-
-        public bool BoldKiscsoportvezetok { get; set; } = false;
-        public static readonly DependencyProperty BoldKiscsoportvezetokProperty =
-            DependencyProperty.Register("BoldKiscsoportvezetok", typeof(bool), typeof(DnDItemsControl));
-
-        public bool BoldAlvocsoportvezetok { get; set; } = false;
-        public static readonly DependencyProperty BoldAlvocsoportvezetokProperty =
-            DependencyProperty.Register("BoldAlvocsoportvezetok", typeof(bool), typeof(DnDItemsControl));
+            DependencyProperty.Register("VisualizeConflicts", typeof(bool), typeof(DnDItemsControl));        
 
         public bool Pinnable { get; set; } = false;
         public static readonly DependencyProperty PinnableProperty =

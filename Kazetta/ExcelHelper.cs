@@ -46,7 +46,6 @@ namespace Kazetta
             {                
                 Worksheet sheet = file.Worksheets[1];                
                 List<Person> ppl = new List<Person>();
-
                 
                 foreach(Range row in sheet.UsedRange.Rows)
                 {
@@ -61,12 +60,16 @@ namespace Kazetta
                         Name = col[3].Value,
                         Sex = SexMapping[col[4].Value],                        
                         Level = LevelMapping[col[18].Value],
-                        VocalistToo = col[19].Value != "Nem"
+                        VocalistToo = col[19].Value != "Nem",
+                        BirthYear = col[6].Value.Year
                     };
                     if (InstrumentMapping.ContainsKey(instrument))
                         person.Instrument = InstrumentMapping[instrument];
                     else if (instrument.ToString().Contains("dallamh"))
                         person.Instrument = Instrument.Solo;
+
+                    if (col[20].Value != "")
+                        person.BandName = col[20].Value;
                     ppl.Add(person);
                 }
 

@@ -78,10 +78,15 @@ namespace Kazetta
             get { return room; }
             set { room = value; RaisePropertyChanged(); }
         }
+
+        private string bandName;
+        public string BandName { get; set; }
+
         public override string ToString()
         {
             return Name;
         }
+
 
         /// <summary>
         /// These will be filled out by <see cref="Algorithms.ConvertEdges"/> 
