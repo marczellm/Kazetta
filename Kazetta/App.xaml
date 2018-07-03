@@ -1,0 +1,11 @@
+﻿<Application x:Class="Kazetta.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Kazetta"
+             StartupUri="View/MainWindow.xaml">
+    <Application.Resources>
+        <DataTemplate x:Key="adorner">
+            <Label Content="{Binding Name}" Margin="0,0,5,5" Padding="3" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+        </DataTemplate>
+    </Application.Resources>
+</Application>
