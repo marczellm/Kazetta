@@ -36,25 +36,32 @@ namespace Kazetta.ViewModel
         /// <summary>
         /// Returns a newly created CollectionView that live filters the given collection by the given filter expression.
         /// </summary>
-        public static ICollectionView Get(object source, Expression<Func<object, bool>> filter)
+        public static ICollectionView Get(object source, 
+            Expression<Func<object, bool>> filter,
+            SortDescription? sortDescription = null)
         {
             CollectionViewSource cvs = new CollectionViewSource { Source = source, IsLiveFilteringRequested = true, IsLiveSortingRequested = true };
             foreach (string prop in AccessedProperties(filter.Body))
                 cvs.LiveFilteringProperties.Add(prop);
-            cvs.LiveSortingProperties.Add("Name");
+            if (sortDescription != null)
+                cvs.LiveSortingProperties.Add(sortDescription?.PropertyName);
             cvs.View.Filter = filter.Compile().Invoke;
             cvs.View.CollectionChanged += EmptyEventHandler;
-            cvs.View.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            if (sortDescription != null)
+                cvs.View.SortDescriptions.Add(sortDescription.Value);
             return cvs.View;
         }
 
         /// <summary>
         /// Returns the existing CollectionView for the given property name, or a newly created one if there is none
         /// </summary>
-        public static ICollectionView Lazy(object source, Expression<Func<object, bool>> filter, [CallerMemberName] String name = "")
+        public static ICollectionView Lazy(object source, 
+            Expression<Func<object, bool>> filter, 
+            SortDescription? sortDescription = null, 
+            [CallerMemberName] String name = "")
         {
             if (!collectionViewCache.ContainsKey(name))
-                collectionViewCache.Add(name, Get(source, filter));
+                collectionViewCache.Add(name, Get(source, filter, sortDescription));
             return collectionViewCache[name];
         }
 

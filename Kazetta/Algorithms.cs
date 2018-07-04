@@ -14,7 +14,7 @@ namespace Kazetta
         public Algorithms(ViewModel.MainWindow data)
         {
             d = data;
-            Beosztando = d.People.ToList();
+            Beosztando = d.Students.Cast<Person>().ToList();
             ConvertEdges();
         }
 

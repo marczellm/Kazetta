@@ -8,11 +8,24 @@ namespace Kazetta
     public enum Instrument { Guitar, Keyboards, Bass, Percussion, Solo, Voice }
     public enum Level { Beginner, Intermediate, Advanced }
     public enum Sex { Male, Female }
+    public enum PersonType { Teacher, Student }
 
     [Serializable]
     public class Person : ViewModelBase
     {
         public string Name { get; set; }
+        private PersonType type;
+        public PersonType Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+        private Instrument instrument;
+        public Instrument Instrument
+        {
+            get { return instrument; }
+            set { instrument = value; RaisePropertyChanged(); }
+        }
 
         private bool pinned = false;
         public bool Pinned
@@ -46,13 +59,7 @@ namespace Kazetta
         {
             get { return sex; }
             set { sex = value; RaisePropertyChanged(); }
-        }
-        private Instrument instrument;
-        public Instrument Instrument
-        {
-            get { return instrument; }
-            set { instrument = value; RaisePropertyChanged(); }
-        }
+        }        
         private Level level;
         public Level Level
         {
@@ -70,17 +77,22 @@ namespace Kazetta
             get { return band; }
             set { band = value; RaisePropertyChanged(); }
         }
-        private int room = -1;
+        
+        public string BandName { get; set; }
 
-        /// <summary>Zero-based</summary>
-        public int Room
+        private int timeSlot;
+        public int TimeSlot
         {
-            get { return room; }
-            set { room = value; RaisePropertyChanged(); }
+            get { return timeSlot; }
+            set { timeSlot = value; RaisePropertyChanged(); }
         }
 
-        private string bandName;
-        public string BandName { get; set; }
+        private Person teacher;
+        public Person Teacher
+        {
+            get { return teacher; }
+            set { teacher = value; RaisePropertyChanged(); }
+        }
 
         public override string ToString()
         {

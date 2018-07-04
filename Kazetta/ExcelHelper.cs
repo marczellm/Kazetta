@@ -35,11 +35,17 @@ namespace Kazetta
             var InstrumentMapping = new Dictionary<String, Instrument>
             {
                 { "Akusztikus gitár", Instrument.Guitar },
+                { "gitár", Instrument.Guitar },
                 { "Basszusgitár", Instrument.Bass },
+                { "basszusgitár", Instrument.Bass },
                 { "Kórusének", Instrument.Voice },
                 { "Szólóének", Instrument.Voice },
+                { "ének", Instrument.Voice },
                 { "Zongora, billentyűs hangszerek", Instrument.Keyboards },
+                { "zongora", Instrument.Keyboards },
                 { "Dallamhangszer (fuvola, hegedű, cselló stb.)", Instrument.Solo },
+                { "improvizáció", Instrument.Solo },
+                { "ütőhangszerek", Instrument.Percussion },
                 { "Ütőhangszerek", Instrument.Percussion }
             };
             try
@@ -61,7 +67,8 @@ namespace Kazetta
                         Sex = SexMapping[col[4].Value],                        
                         Level = LevelMapping[col[18].Value],
                         VocalistToo = col[19].Value != "Nem",
-                        BirthYear = col[6].Value.Year
+                        BirthYear = col[6].Value.Year,
+                        Type = PersonType.Student
                     };
                     if (InstrumentMapping.ContainsKey(instrument))
                         person.Instrument = InstrumentMapping[instrument];
@@ -71,6 +78,24 @@ namespace Kazetta
                     if (col[20].Value != "")
                         person.BandName = col[20].Value;
                     ppl.Add(person);
+                }
+
+                sheet = file.Worksheets["Tanárok"];
+
+                foreach(Range row in sheet.UsedRange.Rows)
+                {
+                    if (row.Row == 1)
+                        continue;
+                    Range col = row.Columns;
+                    var instrument = col[2].Value;
+                    if (instrument == null)
+                        break;
+                    ppl.Add(new Person
+                    {
+                        Name = col[1].Value,
+                        Instrument = InstrumentMapping[col[2].Value],
+                        Type = PersonType.Teacher
+                    });
                 }
 
                 return ppl;
@@ -95,20 +120,7 @@ namespace Kazetta
             Workbook file = excel.Workbooks.Open(filename);
             try
             {
-                Worksheet sheet = file.Worksheets["Vezérlő adatok"];
-                sheet.Cells[2, 2] = ViewModel.MainWindow.WeekendNumber;
-
-                sheet = file.Worksheets["Alvócsoport címek"];
-                var m = data.Rooms.Count();
-                for (int j = 1; j <= m; j++)
-                {
-                    sheet.Cells[j + 1, 1] = ((char)(j + 64)).ToString();
-                    sheet.Cells[j + 1, 2] = data.AlvocsoportNevek[j - 1];
-                }
-
-                sheet = file.Worksheets["Alapadatok"];
-                sheet.Activate();
-                sheet.Unprotect();
+                Worksheet sheet = file.Worksheets[0];               
                 Range c = sheet.Cells;
                 int i = 2;
                 foreach (Person p in data.People)
@@ -116,14 +128,7 @@ namespace Kazetta
                     c[i, 1].Activate();
                     string[] nev = p.Name.Split(new Char[] { ' ' }, 2);
                     c[i, 1] = nev[0];
-                    c[i, 2] = nev[1];                    
-                    if (ViewModel.MainWindow.WeekendNumber == 20)
-                    {
-                        if (data.Szentendre.Contains(p))
-                            c[i, 9] = "Szentendre";
-                        if (data.MutuallyExclusiveGroups[0].Contains(p))
-                            c[i, 9] = "Zugliget";
-                    }
+                    c[i, 2] = nev[1];
                     i++;
                 }
             }

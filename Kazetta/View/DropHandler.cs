@@ -42,12 +42,6 @@ namespace Kazetta.View
                 dropInfo.Effects = (kcsn != p.Band && D.Algorithm.Conflicts(p, kcsn, out message)) ? DragDropEffects.None : DragDropEffects.Move;
                 D.StatusText = message;
             }
-            else if (target.Name.StartsWith("acs"))
-            {
-                int acsn = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-                var acsvez = D.Rooms[acsn].Cast<Person>().First();
-                dropInfo.Effects = (p.Sex != acsvez.Sex) ? DragDropEffects.None : DragDropEffects.Move;
-            }
             else
                 dropInfo.Effects = DragDropEffects.Move;
         }        
@@ -71,16 +65,8 @@ namespace Kazetta.View
             }            
             if (target.Name.StartsWith("kcs"))
                 p.Band = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-            if (target.Name.StartsWith("acs"))
-            {
-                p.Room = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-                ((ItemsControl)source).Items.Refresh(); // This updates the visualizing decorations for all others in the source
-                ((ItemsControl)target).Items.Refresh(); // and target sleeping groups
-            }
             if (target.Name == "nokcs")
                 p.Band = -1;
-            if (target.Name.StartsWith("noacs"))
-                p.Room = -1;
         }        
     }
 }

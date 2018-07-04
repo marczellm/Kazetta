@@ -23,15 +23,12 @@ namespace Kazetta
         {
             InitializeComponent();
             kcs = new DnDItemsControl[] { kcs1, kcs2, kcs3, kcs4, kcs5, kcs6, kcs7, kcs8, kcs9, kcs10, kcs11, kcs12, kcs13, kcs14 };
-            acs = new DnDItemsControl[] { acs1, acs2, acs3, acs4, acs5, acs6, acs7, acs8, acs9, acs10, acs11, acs12, acs13, acs14 };
-            acsn = new TextBox[] { acsn1, acsn2, acsn3, acsn4, acsn5, acsn6, acsn7, acsn8, acsn9, acsn10, acsn11, acsn12, acsn13, acsn14 };
             string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kazetta");
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
             filepath = Path.Combine(folder, "state.xml");
         }
-        private DnDItemsControl[] kcs, acs;
-        private TextBox[] acsn;
+        private DnDItemsControl[] kcs;
         private string filepath;
         private CancellationTokenSource cts;
 
@@ -77,11 +74,6 @@ namespace Kazetta
             int i = 1;
             foreach (TabItem tab in TabControl.Items)
             {
-                if (tab.Tag != null && Int32.TryParse(tab.Tag as string, out int tag))
-                {
-                    tab.Header = tab.Tag as string + "HV";
-                    tab.Visibility = ViewModel.MainWindow.WeekendNumber == tag ? Visibility.Visible : Visibility.Collapsed;
-                }
                 if (tab.Visibility == Visibility.Visible)
                     tab.Header = String.Format("{0}. {1}", i++, tab.Header);
             }
@@ -151,9 +143,7 @@ namespace Kazetta
             if (dialog.ShowDialog(this) == true)
                 try
                 {
-                    viewModel.AlvocsoportExportOrdering();
                     ExcelHelper.SaveXLS(dialog.FileName, viewModel);
-                    viewModel.AlvocsoportDisplayOrdering(acs.Count() - acs.Count() / 2);
                 }
                 catch (Exception ex) { MessageBox.Show("Hiba az Excel fájl írásakor" + Environment.NewLine + ex.Message ?? "" + Environment.NewLine + ex.InnerException?.Message ?? ""); }
             XLSSavingAnimation.Visibility = Visibility.Hidden;
@@ -232,7 +222,7 @@ namespace Kazetta
             {
                 viewModel.StatusText = "";
                 var newTab = e.AddedItems[0];
-                if (newTab != Kiscsoportbeoszto && newTab != Alvocsoportbeoszto)
+                if (newTab != Kiscsoportbeoszto)
                     return;
                 string message = null;
                 var v = viewModel;
@@ -250,36 +240,18 @@ namespace Kazetta
                 }
                 else if (newTab == Kiscsoportbeoszto)
                 {
-                    viewModel.InitKiscsoport();
-                    var kcsn = viewModel.Bands.Count();
-                    for (int i = 0; i < kcs.Count(); i++)
-                    {
-                        kcs[i].Visibility = i < kcsn ? Visibility.Visible : Visibility.Collapsed;
-                        kcs[i].IsEnabled = i < kcsn;
-                        if (i < kcsn)
-                            BindingOperations.GetBindingExpression(kcs[i], ItemsControl.ItemsSourceProperty).UpdateTarget();
-                    }
-                    viewModel.Algorithm = new Algorithms(viewModel);
-                    viewModel.MagicPossible = true;
-                    BindingOperations.SetBinding(SaveButton, IsEnabledProperty, SaveButtonBinding);
-                }
-                else if (newTab == Alvocsoportbeoszto)
-                {
-                    viewModel.InitKiscsoport();
-                    viewModel.InitAlvocsoport();
-                    viewModel.AlvocsoportDisplayOrdering(acs.Count() - acs.Count() / 2);
-                    for (int j = 0; j < acs.Count(); j++)
-                    {
-                        bool b = viewModel.Room(j).Any();
-                        acs[j].Visibility = acsn[j].Visibility = b ? Visibility.Visible : Visibility.Collapsed;
-                        acs[j].IsEnabled = acsn[j].IsEnabled = b;
-                        if (b)
-                        {
-                            BindingOperations.GetBindingExpression(acs[j], ItemsControl.ItemsSourceProperty).UpdateTarget();
-                            acs[j].Items.Refresh();
-                        }
-                    }
-                    BindingOperations.GetBindingExpression(SaveButton, IsEnabledProperty)?.UpdateTarget();                    
+                    //viewModel.InitKiscsoport();
+                    //var kcsn = viewModel.Bands.Count();
+                    //for (int i = 0; i < kcs.Count(); i++)
+                    //{
+                    //    kcs[i].Visibility = i < kcsn ? Visibility.Visible : Visibility.Collapsed;
+                    //    kcs[i].IsEnabled = i < kcsn;
+                    //    if (i < kcsn)
+                    //        BindingOperations.GetBindingExpression(kcs[i], ItemsControl.ItemsSourceProperty).UpdateTarget();
+                    //}
+                    //viewModel.Algorithm = new Algorithms(viewModel);
+                    //viewModel.MagicPossible = true;
+                    //BindingOperations.SetBinding(SaveButton, IsEnabledProperty, SaveButtonBinding);
                 }
             }
         }
@@ -317,11 +289,5 @@ namespace Kazetta
             foreach (Person p in viewModel.People)
                     p.Band = -1;
         }
-
-        private void ClearAlvocsoportok(object sender, RoutedEventArgs e)
-        {
-            foreach (Person p in viewModel.People)
-                    p.Room = -1;
-        }        
     }
 }
