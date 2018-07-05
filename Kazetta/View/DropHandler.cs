@@ -10,12 +10,13 @@ namespace Kazetta.View
     class DropHandler : FrameworkElement, IDropTarget
     {
         private ViewModel.MainWindow D => (ViewModel.MainWindow)DataContext;
+        private DefaultDropHandler defaultDropHandler = new DefaultDropHandler();
         /// <summary>
         /// Set where drops are allowed
         /// </summary>
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            dropInfo.DropTargetAdorner = null;
+            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
             var target = (FrameworkElement)dropInfo.VisualTarget;
             var source = (FrameworkElement)dropInfo.DragInfo.VisualSource;
             if (!(dropInfo.Data is Person))
@@ -32,14 +33,9 @@ namespace Kazetta.View
             {
                 dropInfo.Effects = DragDropEffects.None;
                 D.StatusText = p + " le van rögzítve!";
-            }            
-            else if (target.Name.StartsWith("kcs"))
-            {
-                int kcsn = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-                string message = null;
-                //dropInfo.Effects = (kcsn != p.Band && D.Algorithm.Conflicts(p, kcsn, out message)) ? DragDropEffects.None : DragDropEffects.Move;
-                D.StatusText = message;
             }
+            else if (target.Name.StartsWith("kcs") && p.Instrument != D.Teachers[Int32.Parse(target.Name.Remove(0, 3)) - 1].Instrument)
+                dropInfo.Effects = DragDropEffects.None;
             else
                 dropInfo.Effects = DragDropEffects.Move;
         }        
@@ -52,20 +48,17 @@ namespace Kazetta.View
             var target = (FrameworkElement)dropInfo.VisualTarget;
             var source = (FrameworkElement)dropInfo.DragInfo.VisualSource;
             Person p = (Person)dropInfo.Data;
-            switch (target.Name)
+            if (target.Name == "AddOrRemovePersonButton") { 
+                D.Students.Remove(p);
+                D.Edges.RemoveAll(e => e.Persons.Contains(p));
+            }
+            else if (target.Name.StartsWith("kcs"))
             {
-                case "Fiuk": p.Sex = Sex.Male; break;
-                case "Lanyok": p.Sex = Sex.Female; break;
-                case "AddOrRemovePersonButton":
-                    D.Students.Remove(p);
-                    D.Edges.RemoveAll(e => e.Persons.Contains(p));
-                    break;  
-            }            
-            //if (target.Name.StartsWith("kcs"))
-            //    p.Band = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-            //if (target.Name == "nokcs")
-            //    p.Band = -1;
-            //TODO
-        }        
+                var i = dropInfo.InsertIndex;
+                p.Teacher = D.Teachers[Int32.Parse(target.Name.Remove(0, 3)) - 1];
+                p.TimeSlot = i;
+                defaultDropHandler.Drop(dropInfo);
+            }
+        }
     }
 }

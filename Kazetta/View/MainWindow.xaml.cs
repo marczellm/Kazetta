@@ -197,7 +197,7 @@ namespace Kazetta
             if (p[0] != p[1])
             {
                 viewModel.Edges.Add(edge);
-                //TODO az egyiket kivenni a zenekarbol
+                //TODO megszuntetni, ha ezzel konfliktus allt elo
                 viewModel.Edge = new Edge { Dislike = edge.Dislike };
             }
         }
@@ -248,7 +248,10 @@ namespace Kazetta
                     viewModel.StatusText = viewModel.Teachers[0].Name;
 
                     for (int i = 0; i < kcs.Count(); i++)
-                        BindingOperations.GetBindingExpression(kcs[i], HeaderedItemsControl.HeaderProperty).UpdateTarget();
+                        if (i < viewModel.Teachers.Count)
+                            BindingOperations.GetBindingExpression(kcs[i], HeaderedItemsControl.HeaderProperty).UpdateTarget();
+                        else
+                            kcs[i].Visibility = Visibility.Collapsed;
                     //viewModel.Algorithm = new Algorithms(viewModel);
                     //viewModel.MagicPossible = true;
                     //BindingOperations.SetBinding(SaveButton, IsEnabledProperty, SaveButtonBinding);
