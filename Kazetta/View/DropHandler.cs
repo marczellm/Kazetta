@@ -24,9 +24,7 @@ namespace Kazetta.View
                 return;
             }
             var p = (Person)dropInfo.Data;
-            if (p.Sex == Sex.Male && target.Name == "Lanyvezeto"
-             || p.Sex == Sex.Female && target.Name == "Fiuvezeto"
-             || source.Name == "PeopleView" && target.Name != "PeopleView" && target.Name != "AddOrRemovePersonButton")
+            if (source.Name == "PeopleView" && target.Name != "PeopleView" && target.Name != "AddOrRemovePersonButton")
             {
                 dropInfo.Effects = DragDropEffects.None;
             }
@@ -39,7 +37,7 @@ namespace Kazetta.View
             {
                 int kcsn = Int32.Parse(target.Name.Remove(0, 3)) - 1;
                 string message = null;
-                dropInfo.Effects = (kcsn != p.Band && D.Algorithm.Conflicts(p, kcsn, out message)) ? DragDropEffects.None : DragDropEffects.Move;
+                //dropInfo.Effects = (kcsn != p.Band && D.Algorithm.Conflicts(p, kcsn, out message)) ? DragDropEffects.None : DragDropEffects.Move;
                 D.StatusText = message;
             }
             else
@@ -59,14 +57,15 @@ namespace Kazetta.View
                 case "Fiuk": p.Sex = Sex.Male; break;
                 case "Lanyok": p.Sex = Sex.Female; break;
                 case "AddOrRemovePersonButton":
-                    D.People.Remove(p);
+                    D.Students.Remove(p);
                     D.Edges.RemoveAll(e => e.Persons.Contains(p));
                     break;  
             }            
-            if (target.Name.StartsWith("kcs"))
-                p.Band = Int32.Parse(target.Name.Remove(0, 3)) - 1;
-            if (target.Name == "nokcs")
-                p.Band = -1;
+            //if (target.Name.StartsWith("kcs"))
+            //    p.Band = Int32.Parse(target.Name.Remove(0, 3)) - 1;
+            //if (target.Name == "nokcs")
+            //    p.Band = -1;
+            //TODO
         }        
     }
 }

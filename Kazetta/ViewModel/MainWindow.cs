@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Kazetta.ViewModel
 {
@@ -14,7 +15,7 @@ namespace Kazetta.ViewModel
         /// <summary>
         /// Most tabs disable if this is false
         /// </summary>
-        public bool PeopleNotEmpty => People.Any();
+        public bool PeopleNotEmpty => Students.Any();
 
         private bool magicAllowed = false;
         private bool magicPossible = false;
@@ -27,49 +28,66 @@ namespace Kazetta.ViewModel
             RaisePropertyChanged("PeopleNotEmpty");        
         }
 
-        private ObservableCollection2<Person> people;
-        public ObservableCollection2<Person> People
+        private ObservableCollection2<Person> students;
+        public ObservableCollection2<Person> Students
         {
             get
             {
-                if (people == null)
+                if (students == null)
                 {
-                    people = new ObservableCollection2<Person>();
-                    people.CollectionChanged += People_CollectionChanged;
+                    students = new ObservableCollection2<Person>();
+                    students.CollectionChanged += People_CollectionChanged;
                 }
-                return people;
+                return students;
             }
             private set
             {
-                people = value;
+                students = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged("PeopleNotEmpty");
             }
         }
 
+        private ObservableCollection2<Person> teachers;
+        public ObservableCollection2<Person> Teachers
+        {
+            get
+            {
+                if (teachers == null)
+                {
+                    teachers = new ObservableCollection2<Person>(new Person[16]);
+                    teachers.CollectionChanged += People_CollectionChanged;
+                }
+                return teachers;
+            }
+            private set
+            {
+                teachers = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
+        public List<ObservableCollection2<Person>> Schedule { get; private set; }
+
         private volatile bool kiscsoportInited = false;
 
         /// <summary>
-        /// This method is called when the kiscsoportbeoszto tab is opened and all conditions have been met.
+        /// This method is called when the ScheduleTab tab is opened and all conditions have been met.
         /// </summary>
-        internal void InitKiscsoport()
+        internal void InitSchedule()
         {
             if (kiscsoportInited)
                 return;
-            //bands = Enumerable.Range(0, 15).Select(i => BandCollectionView(i)).ToList();
-            
-            //NoBand.CollectionChanged += (s, e) => RaisePropertyChanged("BeosztasKesz");
+            Schedule = Teachers.Select(_ => new ObservableCollection2<Person>()).ToList();
 
             kiscsoportInited = true;
-            RaisePropertyChanged("Kiscsoportok");
-            RaisePropertyChanged("NoKiscsoport");
         }
 
-        public ICollectionView Students => CollectionViewHelper.Lazy(People, p => ((Person)p).Type == PersonType.Student);
-        public ICollectionView Teachers => CollectionViewHelper.Lazy(People, p => ((Person)p).Type == PersonType.Teacher, new SortDescription("Instrument", ListSortDirection.Ascending));
-        public ICollectionView Fiuk => CollectionViewHelper.Lazy(People, p => ((Person)p).Sex == Sex.Male);
-        public ICollectionView Lanyok => CollectionViewHelper.Lazy(People, p => ((Person)p).Sex == Sex.Female);
-        public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(People, p => ((Person)p).Type == PersonType.Student);
+        public ICollectionView Fiuk => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Male);
+        public ICollectionView Lanyok => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Female);
+        public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student);
+        public ICollectionView Unscheduled => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student && (((Person)p).Teacher == null || ((Person)p).TimeSlot < 0));
 
         private ObservableCollection2<Edge> edges;
         public ObservableCollection2<Edge> Edges
@@ -108,21 +126,23 @@ namespace Kazetta.ViewModel
             {
                 return new AppData
                 {
-                    Persons = People.ToArray(),
-                    Edges = Edges.ToArray()                    
+                    Students = Students.ToArray(),
+                    Teachers = Teachers.ToArray(),
+                    Edges = Edges.ToArray()
                 };
             }
             set
             {
-                People.AddRange(value.Persons);
+                Students.AddRange(value.Students);
+                Teachers.AddRange(value.Teachers);
                 Edges.AddRange(value.Edges);
                 // The XML serializer doesn't handle object references, so we replace Person copies with references
                 foreach (Edge edge in Edges)
                     for (int i = 0; i < edge.Persons.Count(); i++)
-                        edge.Persons[i] = People.Single(p => p.Name == edge.Persons[i].Name);                
+                        edge.Persons[i] = Students.Single(p => p.Name == edge.Persons[i].Name);                
             }
         }
-
+        
         public void SwapKiscsoports(int i, int j)
         {
             Debug.Assert(i != -100);

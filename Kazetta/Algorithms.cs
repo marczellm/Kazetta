@@ -26,7 +26,7 @@ namespace Kazetta
         /// </summary>
         private void ConvertEdges()
         {
-            foreach(Person p in d.People)
+            foreach(Person p in d.Students)
             {
                 p.kivelIgen.Clear();
                 p.kivelNem.Clear();
@@ -39,25 +39,20 @@ namespace Kazetta
                     e.Persons[1].kivelNem.Add(e.Persons[0]);
                 }                
             }
-            foreach (Person p in d.People)
-                foreach (Person q in d.People)
+            foreach (Person p in d.Students)
+                foreach (Person q in d.Students)
                     if (p != q && p.BandName == q.BandName)
                     {
                         p.kivelIgen.Add(q);
                         q.kivelIgen.Add(p);
                     }
-            foreach (Person p in d.People)
+            foreach (Person p in d.Students)
                 p.CollectRecursiveEdges();
         }
 
-        /// <summary>
-        /// Assign the given group number to the person and all of their BFFs.
-        /// </summary>
         private void AssignToKiscsoport(Person p, int kiscsoport)
         {
-            p.Band = kiscsoport;
-            foreach (Person q in p.kivelIgen)
-                q.Band = kiscsoport;
+            throw new NotImplementedException();
         }
 
         public bool Conflicts(Person p, int kiscsoport)
@@ -105,8 +100,8 @@ namespace Kazetta
         {
             foreach (Person p in Beosztando)
                 if (!p.Pinned)
-                    p.Band = -1;
-            Beosztando.RemoveAll((Person p) => p.Band != -1);
+                    ;// p.Band = -1; //TODO
+            //Beosztando.RemoveAll((Person p) => p.Band != -1);
 
             bool kesz = false;
             while (!kesz && ct?.IsCancellationRequested != true) // generate random orderings of People and run the first-fit coloring until it is complete or cancelled

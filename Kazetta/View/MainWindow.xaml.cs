@@ -109,8 +109,9 @@ namespace Kazetta
             if (dialog.ShowDialog(this) == true)
             {
                 viewModel.Edges.Clear();
-                viewModel.People.Clear();
-                viewModel.People.AddRange(await Task.Run<List<Person>>(() =>
+                viewModel.Students.Clear();
+                viewModel.Teachers.Clear();
+                var people = await Task.Run<List<Person>>(() =>
                 {
                     try { return ExcelHelper.LoadXLS(dialog.FileName); }
                     catch (Exception ex)
@@ -118,7 +119,10 @@ namespace Kazetta
                         MessageBox.Show("Hiba az Excel fájl olvasásakor" + Environment.NewLine + ex.Message ?? "" + Environment.NewLine + ex.InnerException?.Message ?? "");                        
                         return new List<Person>();
                     }
-                }));
+                });
+
+                viewModel.Students.AddRange(people.Where(p => p.Type == PersonType.Student));
+                viewModel.Teachers.AddRange(people.Where(p => p.Type == PersonType.Teacher));
             }
             XLSLoadingAnimation.Visibility = Visibility.Hidden;
             btn.Click += LoadXLS;
@@ -151,13 +155,13 @@ namespace Kazetta
 
         private void AddPerson(object sender, RoutedEventArgs e)
         {
-            viewModel.People.CollectionChanged += People_CollectionChanged;
-            viewModel.People.Add(new Person());
+            viewModel.Students.CollectionChanged += People_CollectionChanged;
+            viewModel.Students.Add(new Person());
         }
 
         private void People_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            viewModel.People.CollectionChanged -= People_CollectionChanged;
+            viewModel.Students.CollectionChanged -= People_CollectionChanged;
             Person p = (Person)e.NewItems[0];
             var cp = (FrameworkElement)PeopleView.ItemContainerGenerator.ContainerFromItem(p);
             cp.ApplyTemplate();
@@ -212,7 +216,7 @@ namespace Kazetta
 
         private void Reset(object sender, RoutedEventArgs e)
         {
-            viewModel.People.Clear();
+            viewModel.Students.Clear();
             viewModel.Edges.Clear();
         }
 
@@ -222,11 +226,11 @@ namespace Kazetta
             {
                 viewModel.StatusText = "";
                 var newTab = e.AddedItems[0];
-                if (newTab != Kiscsoportbeoszto)
+                if (newTab != ScheduleTab)
                     return;
                 string message = null;
                 var v = viewModel;
-                if (v.People.Count() == 0)
+                if (v.Students.Count() == 0)
                 {
                     message = "Nincsenek résztvevők!";
                     newTab = Resztvevok;
@@ -238,9 +242,9 @@ namespace Kazetta
                     SaveButton.IsEnabled = false;
                     // we don't activate newTab here anymore, because it caused weird behaviour
                 }
-                else if (newTab == Kiscsoportbeoszto)
+                else if (newTab == ScheduleTab)
                 {
-                    //viewModel.InitKiscsoport();
+                    viewModel.InitSchedule();
                     //var kcsn = viewModel.Bands.Count();
                     //for (int i = 0; i < kcs.Count(); i++)
                     //{
@@ -286,8 +290,7 @@ namespace Kazetta
 
         private void ClearKiscsoportok(object sender, RoutedEventArgs e)
         {
-            foreach (Person p in viewModel.People)
-                    p.Band = -1;
+            throw new NotImplementedException();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Kazetta.View
         {
             Person p = (Person)values[0];
             var viewModel = (ViewModel.MainWindow)values[1];
-            int i = p.Band;
+            //int i = p.Band;
             //if (i != -1 && viewModel.Bands[i].Cast<Person>().Any(q => p != q && p.Band == q.Band))
             //    return new SolidColorBrush(Color.FromArgb(127, colors[i, 0], colors[i, 1], colors[i, 2]));
             //else 

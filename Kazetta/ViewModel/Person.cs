@@ -66,17 +66,8 @@ namespace Kazetta
             get { return level; }
             set { level = value; RaisePropertyChanged(); }
         }
-        public bool VocalistToo { get; set; }
-        public bool Vocalist => VocalistToo || Instrument == Instrument.Voice;
-
-        private int band = -1;
-
-        /// <summary>Zero-based</summary>
-        public int Band
-        {
-            get { return band; }
-            set { band = value; RaisePropertyChanged(); }
-        }
+        public bool IsVocalistToo { get; set; }
+        public bool IsVocalist => IsVocalistToo || Instrument == Instrument.Voice;
         
         public string BandName { get; set; }
 

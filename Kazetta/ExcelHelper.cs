@@ -66,7 +66,7 @@ namespace Kazetta
                         Name = col[3].Value,
                         Sex = SexMapping[col[4].Value],                        
                         Level = LevelMapping[col[18].Value],
-                        VocalistToo = col[19].Value != "Nem",
+                        IsVocalistToo = col[19].Value != "Nem",
                         BirthYear = col[6].Value.Year,
                         Type = PersonType.Student
                     };
@@ -123,7 +123,7 @@ namespace Kazetta
                 Worksheet sheet = file.Worksheets[0];               
                 Range c = sheet.Cells;
                 int i = 2;
-                foreach (Person p in data.People)
+                foreach (Person p in data.Students)
                 {
                     c[i, 1].Activate();
                     string[] nev = p.Name.Split(new Char[] { ' ' }, 2);

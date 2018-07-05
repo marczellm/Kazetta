@@ -50,7 +50,7 @@
                     <Button Content="Törlés" DockPanel.Dock="Right" Click="Reset" Padding="5"/>
                 </DockPanel>                
                 <Grid Margin="5">
-                    <view:DnDItemsControl Header="Résztvevők" x:Name="PeopleView" ItemsSource="{Binding People}" dd:DragDrop.DropHandler="{StaticResource DropHandler}">
+                    <view:DnDItemsControl Header="Résztvevők" x:Name="PeopleView" ItemsSource="{Binding Students}" dd:DragDrop.DropHandler="{StaticResource DropHandler}">
                         <dd:DragDrop.DragHandler>
                             <view:AnimatedDragHandler Animation="{StaticResource ButtonRotateBackAnimation}"/>
                         </dd:DragDrop.DragHandler>
@@ -72,7 +72,7 @@
                 </Grid>
             </DockPanel>
         </TabItem>
-        <TabItem Header="Megszorítások" IsEnabled="{Binding PeopleNotEmpty}" Name="Megszoritasok">
+        <TabItem Header="Megszorítások" IsEnabled="{Binding PeopleNotEmpty}" Name="Megszoritasok" Visibility="Collapsed">
             <DockPanel>
                 <Label DockPanel.Dock="Top" Content="Megkötések a kiscsoportbeosztáshoz"/>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
@@ -141,7 +141,7 @@
                 </ItemsControl>
             </DockPanel>
         </TabItem>        
-        <TabItem Header="Kiscsoportbeosztás" Name="Kiscsoportbeoszto" IsEnabled="{Binding PeopleNotEmpty}">
+        <TabItem Header="Főtárgy órák" Name="ScheduleTab" IsEnabled="{Binding PeopleNotEmpty}">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False" Width="Auto">
                     <Button Content="Magic" Padding="5" Click="Magic" DockPanel.Dock="Left" Name="MagicButton" IsEnabled="{Binding MagicEnabled}"/>
@@ -149,17 +149,13 @@
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="MagicAnimation" Margin="20,0,0,0" DockPanel.Dock="Left"/>
                     
                     <Button Content="Törlés" Padding="5" Click="ClearKiscsoportok" DockPanel.Dock="Right"/>
-                    <Button Content="Mentés" Padding="5" Click="SaveXLS" DockPanel.Dock="Right" Name="SaveButton">
-                        <Button.IsEnabled>
-                            <Binding Path="BeosztasKesz" x:Name="SaveButtonBinding"/>
-                        </Button.IsEnabled>
-                    </Button>
+                    <Button Content="Mentés" Padding="5" Click="SaveXLS" DockPanel.Dock="Right" Name="SaveButton"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="XLSSavingAnimation" Margin="20,0,20,0" DockPanel.Dock="Right"/>
                 </DockPanel>
                 <StatusBar DockPanel.Dock="Bottom">
                     <StatusBarItem Content="{Binding StatusText}" MinHeight="22"/>
                 </StatusBar>
-                <Grid Name="Kiscsoportok">
+                <Grid Name="Schedule">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -186,23 +182,23 @@
                             </Style>
                         </ResourceDictionary>
                     </Grid.Resources>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Kiscsoportok[0]}" x:Name="kcs1"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Kiscsoportok[1]}" x:Name="kcs2"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Kiscsoportok[2]}" x:Name="kcs3"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="3" ItemsSource="{Binding Kiscsoportok[3]}" x:Name="kcs4"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="4" ItemsSource="{Binding Kiscsoportok[4]}" x:Name="kcs5"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="5" ItemsSource="{Binding Kiscsoportok[5]}" x:Name="kcs6"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="6" ItemsSource="{Binding Kiscsoportok[6]}" x:Name="kcs7"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="7" ItemsSource="{Binding Kiscsoportok[7]}" x:Name="kcs8"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Kiscsoportok[8]}" x:Name="kcs9"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Kiscsoportok[9]}" x:Name="kcs10"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Kiscsoportok[10]}" x:Name="kcs11"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Kiscsoportok[11]}" x:Name="kcs12"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Kiscsoportok[12]}" x:Name="kcs13"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Kiscsoportok[13]}" x:Name="kcs14"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Kiscsoportok[14]}" x:Name="kcs15"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Kiscsoportok[15]}" x:Name="kcs16"/>
-                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="7" ItemsSource="{Binding NoKiscsoport}" x:Name="nokcs"
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Schedule[0]}" x:Name="kcs1" Header="{Binding Teachers[0]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Schedule[1]}" x:Name="kcs2" Header="{Binding Teachers[1]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Schedule[2]}" x:Name="kcs3" Header="{Binding Teachers[2]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="3" ItemsSource="{Binding Schedule[3]}" x:Name="kcs4" Header="{Binding Teachers[3]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="4" ItemsSource="{Binding Schedule[4]}" x:Name="kcs5" Header="{Binding Teachers[4]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="5" ItemsSource="{Binding Schedule[5]}" x:Name="kcs6" Header="{Binding Teachers[5]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="6" ItemsSource="{Binding Schedule[6]}" x:Name="kcs7" Header="{Binding Teachers[6]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="7" ItemsSource="{Binding Schedule[7]}" x:Name="kcs8" Header="{Binding Teachers[7]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Schedule[8]}" x:Name="kcs9" Header="{Binding Teachers[8]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Schedule[9]}" x:Name="kcs10" Header="{Binding Teachers[9]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Schedule[10]}" x:Name="kcs11" Header="{Binding Teachers[10]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Schedule[11]}" x:Name="kcs12" Header="{Binding Teachers[11]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Schedule[12]}" x:Name="kcs13" Header="{Binding Teachers[12]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}"/>
+                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"
                                           Pinnable="False"/>
