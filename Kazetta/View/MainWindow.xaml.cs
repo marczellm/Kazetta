@@ -22,7 +22,7 @@ namespace Kazetta
         public MainWindow()
         {
             InitializeComponent();
-            kcs = new DnDItemsControl[] { kcs1, kcs2, kcs3, kcs4, kcs5, kcs6, kcs7, kcs8, kcs9, kcs10, kcs11, kcs12, kcs13, kcs14 };
+            kcs = new DnDItemsControl[] { kcs1, kcs2, kcs3, kcs4, kcs5, kcs6, kcs7, kcs8, kcs9, kcs10, kcs11, kcs12, kcs13, kcs14, kcs15, kcs16 };
             string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kazetta");
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
@@ -245,14 +245,10 @@ namespace Kazetta
                 else if (newTab == ScheduleTab)
                 {
                     viewModel.InitSchedule();
-                    //var kcsn = viewModel.Bands.Count();
-                    //for (int i = 0; i < kcs.Count(); i++)
-                    //{
-                    //    kcs[i].Visibility = i < kcsn ? Visibility.Visible : Visibility.Collapsed;
-                    //    kcs[i].IsEnabled = i < kcsn;
-                    //    if (i < kcsn)
-                    //        BindingOperations.GetBindingExpression(kcs[i], ItemsControl.ItemsSourceProperty).UpdateTarget();
-                    //}
+                    viewModel.StatusText = viewModel.Teachers[0].Name;
+
+                    for (int i = 0; i < kcs.Count(); i++)
+                        BindingOperations.GetBindingExpression(kcs[i], HeaderedItemsControl.HeaderProperty).UpdateTarget();
                     //viewModel.Algorithm = new Algorithms(viewModel);
                     //viewModel.MagicPossible = true;
                     //BindingOperations.SetBinding(SaveButton, IsEnabledProperty, SaveButtonBinding);

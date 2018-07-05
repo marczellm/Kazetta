@@ -114,12 +114,7 @@ namespace Kazetta.ViewModel
             get { return statusText; }
             set { statusText = value; RaisePropertyChanged(); }
         }
-
-        /// <summary>
-        /// Represents groups in which no two persons should get assigned to the same sharing group.
-        /// </summary>
-        public ObservableCollection2<ObservableCollection2<Person>> MutuallyExclusiveGroups { get; } = new ObservableCollection2<ObservableCollection2<Person>> { new ObservableCollection2<Person>() };
-
+        
         internal AppData AppData
         {
             get
@@ -134,6 +129,7 @@ namespace Kazetta.ViewModel
             set
             {
                 Students.AddRange(value.Students);
+                Teachers.Clear();
                 Teachers.AddRange(value.Teachers);
                 Edges.AddRange(value.Edges);
                 // The XML serializer doesn't handle object references, so we replace Person copies with references
