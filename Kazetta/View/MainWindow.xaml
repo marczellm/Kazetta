@@ -182,22 +182,22 @@
                             </Style>
                         </ResourceDictionary>
                     </Grid.Resources>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Schedule[0]}" x:Name="kcs1" Header="{Binding Teachers[0]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Schedule[1]}" x:Name="kcs2" Header="{Binding Teachers[1]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Schedule[2]}" x:Name="kcs3" Header="{Binding Teachers[2]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="3" ItemsSource="{Binding Schedule[3]}" x:Name="kcs4" Header="{Binding Teachers[3]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="4" ItemsSource="{Binding Schedule[4]}" x:Name="kcs5" Header="{Binding Teachers[4]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="5" ItemsSource="{Binding Schedule[5]}" x:Name="kcs6" Header="{Binding Teachers[5]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="6" ItemsSource="{Binding Schedule[6]}" x:Name="kcs7" Header="{Binding Teachers[6]}"/>
-                    <view:DnDItemsControl Grid.Row="0" Grid.Column="7" ItemsSource="{Binding Schedule[7]}" x:Name="kcs8" Header="{Binding Teachers[7]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Schedule[8]}" x:Name="kcs9" Header="{Binding Teachers[8]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Schedule[9]}" x:Name="kcs10" Header="{Binding Teachers[9]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Schedule[10]}" x:Name="kcs11" Header="{Binding Teachers[10]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Schedule[11]}" x:Name="kcs12" Header="{Binding Teachers[11]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Schedule[12]}" x:Name="kcs13" Header="{Binding Teachers[12]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Schedule[0]}" x:Name="kcs1" Header="{Binding Teachers[0]}" Tag="0"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Schedule[1]}" x:Name="kcs2" Header="{Binding Teachers[1]}" Tag="1"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Schedule[2]}" x:Name="kcs3" Header="{Binding Teachers[2]}" Tag="2"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="3" ItemsSource="{Binding Schedule[3]}" x:Name="kcs4" Header="{Binding Teachers[3]}" Tag="3"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="4" ItemsSource="{Binding Schedule[4]}" x:Name="kcs5" Header="{Binding Teachers[4]}" Tag="4"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="5" ItemsSource="{Binding Schedule[5]}" x:Name="kcs6" Header="{Binding Teachers[5]}" Tag="5"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="6" ItemsSource="{Binding Schedule[6]}" x:Name="kcs7" Header="{Binding Teachers[6]}" Tag="6"/>
+                    <view:DnDItemsControl Grid.Row="0" Grid.Column="7" ItemsSource="{Binding Schedule[7]}" x:Name="kcs8" Header="{Binding Teachers[7]}" Tag="7"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Schedule[8]}" x:Name="kcs9" Header="{Binding Teachers[8]}" Tag="8"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Schedule[9]}" x:Name="kcs10" Header="{Binding Teachers[9]}" Tag="9"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Schedule[10]}" x:Name="kcs11" Header="{Binding Teachers[10]}" Tag="10"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Schedule[11]}" x:Name="kcs12" Header="{Binding Teachers[11]}" Tag="11"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Schedule[12]}" x:Name="kcs13" Header="{Binding Teachers[12]}" Tag="12"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}" Tag="13"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}" Tag="14"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}" Tag="15"/>
                     <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"

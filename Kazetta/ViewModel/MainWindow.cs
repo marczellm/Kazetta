@@ -10,7 +10,7 @@ namespace Kazetta.ViewModel
     /// Because this is not an enterprise app, I didn't create the plumbing necessary to have separate ViewModels for each tab.
     /// Instead I dumped all of the application state in the below class.
     /// </summary>
-    public class MainWindow: ViewModelBase
+    public class MainWindow : ViewModelBase
     {
         /// <summary>
         /// Most tabs disable if this is false
@@ -19,13 +19,13 @@ namespace Kazetta.ViewModel
 
         private bool magicAllowed = false;
         private bool magicPossible = false;
-        public bool MagicAllowed  { get { return magicAllowed; }  set { magicAllowed = value;  RaisePropertyChanged("MagicEnabled"); } }
+        public bool MagicAllowed { get { return magicAllowed; } set { magicAllowed = value; RaisePropertyChanged("MagicEnabled"); } }
         public bool MagicPossible { get { return magicPossible; } set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
         public bool MagicEnabled => MagicAllowed && MagicPossible;
 
         private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            RaisePropertyChanged("PeopleNotEmpty");        
+            RaisePropertyChanged("PeopleNotEmpty");
         }
 
         private ObservableCollection2<Person> students;
@@ -68,26 +68,37 @@ namespace Kazetta.ViewModel
         }
 
 
-        public List<ObservableCollection2<Person>> Schedule { get; private set; }
+        public List<ObservableCollection2<Person>> Schedule
+        {
+            get { return _schedule; }
+            private set
+            {
+                _schedule = value;
+                RaisePropertyChanged();
+            }
+        }
 
-        private volatile bool kiscsoportInited = false;
+        private volatile bool scheduleInited = false;
 
         /// <summary>
         /// This method is called when the ScheduleTab tab is opened and all conditions have been met.
         /// </summary>
         internal void InitSchedule()
         {
-            if (kiscsoportInited)
+            if (scheduleInited)
                 return;
-            Schedule = Teachers.Select(_ => new ObservableCollection2<Person>()).ToList();
+            var schedule = Teachers.Select(t => Students.Where(p => p.Teacher == t));
+            Schedule = schedule.Select(seq => new ObservableCollection2<Person>(seq.ToArray())).ToList();
 
-            kiscsoportInited = true;
+            scheduleInited = true;
         }
 
         public ICollectionView Fiuk => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Male);
         public ICollectionView Lanyok => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Female);
         public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student);
-        public ICollectionView Unscheduled => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student && (((Person)p).Teacher == null || ((Person)p).TimeSlot < 0));
+        public ICollectionView Unscheduled => CollectionViewHelper.Lazy(Students,
+            p => ((Person)p).Type == PersonType.Student && (((Person)p).Teacher == null || ((Person)p).TimeSlot < 0),
+            new SortDescription("Name", ListSortDirection.Ascending));
 
         private ObservableCollection2<Edge> edges;
         public ObservableCollection2<Edge> Edges
@@ -109,12 +120,14 @@ namespace Kazetta.ViewModel
         }
         public Algorithms Algorithm { get; set; }
         private string statusText = "";
+        private List<ObservableCollection2<Person>> _schedule;
+
         public string StatusText
         {
             get { return statusText; }
             set { statusText = value; RaisePropertyChanged(); }
         }
-        
+
         internal AppData AppData
         {
             get
@@ -129,16 +142,19 @@ namespace Kazetta.ViewModel
             set
             {
                 Students.AddRange(value.Students);
-                Teachers.Clear();
+                Teachers.QuietClear();                
                 Teachers.AddRange(value.Teachers);
                 Edges.AddRange(value.Edges);
                 // The XML serializer doesn't handle object references, so we replace Person copies with references
+                foreach (Person student in Students)
+                    if (student.Teacher != null)
+                        student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
                 foreach (Edge edge in Edges)
                     for (int i = 0; i < edge.Persons.Count(); i++)
-                        edge.Persons[i] = Students.Single(p => p.Name == edge.Persons[i].Name);                
+                        edge.Persons[i] = Students.Single(p => p.Name == edge.Persons[i].Name);
             }
         }
-        
+
         public void SwapKiscsoports(int i, int j)
         {
             Debug.Assert(i != -100);

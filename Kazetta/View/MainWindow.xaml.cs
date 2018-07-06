@@ -110,7 +110,7 @@ namespace Kazetta
             {
                 viewModel.Edges.Clear();
                 viewModel.Students.Clear();
-                viewModel.Teachers.Clear();
+                viewModel.Teachers.QuietClear();
                 var people = await Task.Run<List<Person>>(() =>
                 {
                     try { return ExcelHelper.LoadXLS(dialog.FileName); }
@@ -121,8 +121,9 @@ namespace Kazetta
                     }
                 });
 
-                viewModel.Students.AddRange(people.Where(p => p.Type == PersonType.Student));
                 viewModel.Teachers.AddRange(people.Where(p => p.Type == PersonType.Teacher));
+                viewModel.Students.AddRange(people.Where(p => p.Type == PersonType.Student).OrderBy(p=> p.Name));
+                
             }
             XLSLoadingAnimation.Visibility = Visibility.Hidden;
             btn.Click += LoadXLS;

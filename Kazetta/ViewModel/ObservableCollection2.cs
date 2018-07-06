@@ -24,5 +24,12 @@ namespace Kazetta.ViewModel
             Items.Where(cond).ToList().All(p => Items.Remove(p));
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
+        /// <summary>
+        /// Clears the collection without raising a CollectionChanged event
+        /// </summary>
+        public void QuietClear()
+        {
+            Items.Clear();
+        }
     }
 }
