@@ -85,6 +85,20 @@ namespace Kazetta
             set { teacher = value; RaisePropertyChanged(); }
         }
 
+        private int vocalTimeSlot;
+        public int VocalTimeSlot
+        {
+            get { return vocalTimeSlot; }
+            set { vocalTimeSlot = value; RaisePropertyChanged(); }
+        }
+
+        private Person vocalTeacher;
+        public Person VocalTeacher
+        {
+            get { return vocalTeacher; }
+            set { vocalTeacher = value; RaisePropertyChanged(); }
+        }
+
         public override string ToString()
         {
             return Name;

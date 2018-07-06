@@ -49,8 +49,19 @@ namespace Kazetta.View
             else if (target.Name.StartsWith("kcs"))
             {
                 var i = dropInfo.InsertIndex;
-                p.Teacher = D.Teachers[int.Parse((string)target.Tag)];
-                p.TimeSlot = i;
+                var teacher = D.Teachers[int.Parse((string)target.Tag)];
+                if (p.Instrument == teacher.Instrument)
+                {
+                    p.TimeSlot = i;
+                    p.Teacher = teacher;
+                }
+                else if (p.IsVocalistToo && teacher.Instrument == Instrument.Voice)
+                {
+                    p.VocalTimeSlot = i;
+                    p.VocalTeacher = teacher;
+                }
+                else return;
+
                 var j = D.Students.IndexOf(p);
                 defaultDropHandler.Drop(dropInfo); // This locates the correct ObservableCollection and inserts p, but also removes it from Students
                 D.Students.Insert(j, p);

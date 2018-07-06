@@ -97,7 +97,11 @@ namespace Kazetta.ViewModel
         public ICollectionView Lanyok => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Female);
         public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student);
         public ICollectionView Unscheduled => CollectionViewHelper.Lazy(Students,
-            p => ((Person)p).Type == PersonType.Student && (((Person)p).Teacher == null || ((Person)p).TimeSlot < 0),
+            p => ((Person)p).Type == PersonType.Student && (
+                 ((Person)p).Teacher == null || 
+                 ((Person)p).TimeSlot < 0 ||
+                 (((Person)p).IsVocalistToo && ((Person)p).VocalTeacher == null)
+            ),
             new SortDescription("Name", ListSortDirection.Ascending));
 
         private ObservableCollection2<Edge> edges;
