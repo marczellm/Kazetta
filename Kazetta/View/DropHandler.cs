@@ -26,10 +26,22 @@ namespace Kazetta.View
                     D.StatusText = p + " le van rögzítve!";
                 else if (target.Name.StartsWith("kcs"))
                 {
-                    Person teacher = D.Teachers[int.Parse((string)target.Tag)];
-                    if (p.Instrument == teacher.Instrument
-                        || (p.IsVocalistToo && teacher.Instrument == Instrument.Voice))
+                    Person targetTeacher = D.Teachers[int.Parse((string)target.Tag)];
+
+                    if (source.Name.StartsWith("kcs"))
+                    {
+                        Person sourceTeacher = D.Teachers[int.Parse((string)source.Tag)];
+                        if (sourceTeacher.Instrument == targetTeacher.Instrument)
+                            dropInfo.Effects = DragDropEffects.Move;
+                    }
+                    else if (source.Name == "nokcs" && (p.Instrument == targetTeacher.Instrument
+                        || (p.IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)))
                         dropInfo.Effects = DragDropEffects.Move;
+                }
+                else if (target.Name == "nokcs")
+                {
+                    dropInfo.DropTargetAdorner = null;
+                    dropInfo.Effects = DragDropEffects.Move;
                 }
             }
         }        
@@ -53,18 +65,36 @@ namespace Kazetta.View
                 if (p.Instrument == teacher.Instrument)
                 {
                     p.TimeSlot = i;
+                    if (p.Teacher != null)
+                        D.Schedule[D.Teachers.IndexOf(p.Teacher)].Remove(p);
                     p.Teacher = teacher;
                 }
                 else if (p.IsVocalistToo && teacher.Instrument == Instrument.Voice)
                 {
                     p.VocalTimeSlot = i;
+                    if (p.VocalTeacher != null)
+                        D.Schedule[D.Teachers.IndexOf(p.VocalTeacher)].Remove(p);
                     p.VocalTeacher = teacher;
                 }
                 else return;
 
                 var j = D.Students.IndexOf(p);
-                defaultDropHandler.Drop(dropInfo); // This locates the correct ObservableCollection and inserts p, but also removes it from Students
-                D.Students.Insert(j, p);
+                defaultDropHandler.Drop(dropInfo); // This locates the correct ObservableCollection and inserts p, but sometimes also removes it from Students
+                if (!D.Students.Contains(p))
+                    D.Students.Insert(j, p);
+
+            }
+            else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
+            {
+                int i = int.Parse((string)source.Tag);
+
+                Person q = D.Teachers[i];
+                if (p.Teacher == q)
+                    p.Teacher = null;
+                else if (p.VocalTeacher == q)
+                    p.VocalTeacher = null;
+
+                D.Schedule[i].Remove(p);
             }
         }
     }

@@ -19,15 +19,12 @@ namespace Kazetta.ViewModel
         /// </summary>
         public static List<string> AccessedProperties(Expression expression)
         {
-            if (expression is MemberExpression && (expression as MemberExpression).Expression.Type == typeof(Person))
-                return new List<string> { (expression as MemberExpression).Member.Name };
-            else if (expression is BinaryExpression)
-            {
-                var bin = expression as BinaryExpression;
+            if (expression is MemberExpression mem && mem.Expression.Type == typeof(Person))
+                return new List<string> { mem.Member.Name };
+            else if (expression is BinaryExpression bin)
                 return AccessedProperties(bin.Left).Concat(AccessedProperties(bin.Right)).ToList();
-            }
-            else if (expression is UnaryExpression)
-                return AccessedProperties((expression as UnaryExpression).Operand);
+            else if (expression is UnaryExpression un)
+                return AccessedProperties(un.Operand);
             else return new List<string> { };
         }
 

@@ -15,7 +15,7 @@ namespace Kazetta.View
         {
             Person p = (Person)values[0];
             var viewModel = (ViewModel.MainWindow)values[1];
-            Edge edge = viewModel.Edges.FirstOrDefault(e => e.Dislike && e.Persons.Contains(p));
+            Edge edge = viewModel.Edges.FirstOrDefault(e => e.Persons.Contains(p));
             var pp = edge?.Persons;
             if (edge != null && false) // TODO kell-e ez a funkcionalitás egyáltalán?
                 return Brushes.Red;

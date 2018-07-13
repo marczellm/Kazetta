@@ -87,7 +87,7 @@ namespace Kazetta.ViewModel
         {
             if (scheduleInited)
                 return;
-            var schedule = Teachers.Select(t => Students.Where(p => p.Teacher == t));
+            var schedule = Teachers.Select(t => Students.Where(p => p.Teacher == t || p.VocalTeacher == t));
             Schedule = schedule.Select(seq => new ObservableCollection2<Person>(seq.ToArray())).ToList();
 
             scheduleInited = true;
@@ -95,7 +95,9 @@ namespace Kazetta.ViewModel
 
         public ICollectionView Fiuk => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Male);
         public ICollectionView Lanyok => CollectionViewHelper.Lazy(Students, p => ((Person)p).Sex == Sex.Female);
-        public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student);
+        public ICollectionView CsoportokbaOsztando => CollectionViewHelper.Lazy(Students, p => ((Person)p).Type == PersonType.Student
+                                                                                                && ((((Person)p).Instrument == Instrument.Guitar && ((Person)p).Level != Level.Advanced)
+                                                                                                   || ((Person)p).Instrument == Instrument.Solo));
         public ICollectionView Unscheduled => CollectionViewHelper.Lazy(Students,
             p => ((Person)p).Type == PersonType.Student && (
                  ((Person)p).Teacher == null || 
@@ -116,12 +118,7 @@ namespace Kazetta.ViewModel
             get { return edge ?? (edge = new Edge()); }
             set { edge = value; RaisePropertyChanged(); }
         }
-        private int maxAgeDifference = 8;
-        public int MaxAgeDifference
-        {
-            get { return maxAgeDifference; }
-            set { maxAgeDifference = value; RaisePropertyChanged(); }
-        }
+        
         public Algorithms Algorithm { get; set; }
         private string statusText = "";
         private List<ObservableCollection2<Person>> _schedule;
@@ -151,25 +148,16 @@ namespace Kazetta.ViewModel
                 Edges.AddRange(value.Edges);
                 // The XML serializer doesn't handle object references, so we replace Person copies with references
                 foreach (Person student in Students)
+                {
                     if (student.Teacher != null)
                         student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
+                    if (student.VocalTeacher != null)
+                        student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
+                }
                 foreach (Edge edge in Edges)
                     for (int i = 0; i < edge.Persons.Count(); i++)
                         edge.Persons[i] = Students.Single(p => p.Name == edge.Persons[i].Name);
             }
-        }
-
-        public void SwapKiscsoports(int i, int j)
-        {
-            Debug.Assert(i != -100);
-            Debug.Assert(j != -100);
-            if (i == j) return;
-            //foreach (Person p in Band(i).ToList())
-            //    p.Band = -100;
-            //foreach (Person p in Band(j).ToList())
-            //    p.Band = i;
-            //foreach (Person p in Band(-100).ToList())
-            //    p.Band = j;
         }
     }
 }

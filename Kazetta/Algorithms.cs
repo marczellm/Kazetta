@@ -31,14 +31,7 @@ namespace Kazetta
                 p.kivelIgen.Clear();
                 p.kivelNem.Clear();
             }
-            foreach (Edge e in d.Edges)
-            {
-                if (e.Dislike)
-                {
-                    e.Persons[0].kivelNem.Add(e.Persons[1]);
-                    e.Persons[1].kivelNem.Add(e.Persons[0]);
-                }                
-            }
+            
             foreach (Person p in d.Students)
                 foreach (Person q in d.Students)
                     if (p != q && p.BandName == q.BandName)

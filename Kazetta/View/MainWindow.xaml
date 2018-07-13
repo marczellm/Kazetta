@@ -72,22 +72,22 @@
                 </Grid>
             </DockPanel>
         </TabItem>
-        <TabItem Header="Megszorítások" IsEnabled="{Binding PeopleNotEmpty}" Name="Megszoritasok" Visibility="Collapsed">
+        <TabItem Header="Csoportok" IsEnabled="{Binding PeopleNotEmpty}" Name="Megszoritasok">
             <DockPanel>
-                <Label DockPanel.Dock="Top" Content="Megkötések a kiscsoportbeosztáshoz"/>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <ComboBox ItemsSource="{Binding CsoportokbaOsztando}" IsEditable="False" SelectedValue="{Binding Edge.Persons[0]}" MinWidth="100" IsSynchronizedWithCurrentItem="False"/>
+                        <ComboBox ItemsSource="{Binding CsoportokbaOsztando}" 
+                                  IsEditable="False" 
+                                  SelectedValue="{Binding Edge.Persons[0]}"
+                                  SelectionChanged="NewEdge_SelectionChanged"
+                                  MinWidth="100" 
+                                  IsSynchronizedWithCurrentItem="False"/>
                         <Label Content=" és "/>
-                        <ComboBox ItemsSource="{Binding CsoportokbaOsztando}" IsEditable="False" SelectedValue="{Binding Edge.Persons[1]}" MinWidth="100" IsSynchronizedWithCurrentItem="False"/>
-                        <ComboBox IsEditable="False" SelectedValue="{Binding Edge.Dislike}" SelectedValuePath="Tag" MinWidth="100" Margin="5,0,0,0">
-                            <ComboBox.Items>
-                                <ComboBoxItem Content="együtt kell legyenek" Tag="False"/>
-                                <ComboBoxItem Content="nem lehetnek együtt" Tag="True"/>
-                            </ComboBox.Items>
-                        </ComboBox>
-                        <Label Content=", mert "/>
-                        <TextBox Text="{Binding Edge.Reason, UpdateSourceTrigger=PropertyChanged}" MinWidth="100"/>
+                        <ComboBox IsEditable="False"
+                                  SelectedValue="{Binding Edge.Persons[1]}"
+                                  MinWidth="100"
+                                  IsSynchronizedWithCurrentItem="False"
+                                  x:Name="PossiblePairs"/>
                         <Border Style="{StaticResource MaterialShadow}">
                             <view:MaterialButton Click="AddEdge" Height="20" Margin="10,0,0,0" IsDefault="True">
                                 <Button.Content>
@@ -96,30 +96,13 @@
                             </view:MaterialButton>
                         </Border>
                     </StackPanel>
-
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <Label Content="Legnagyobb megengedett korkülönbség"/>
-                        <TextBox MinWidth="20">
-                            <TextBox.Text>
-                                <Binding Path="MaxAgeDifference">
-                                    <Binding.ValidationRules>
-                                        <view:IntValidator/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                    </StackPanel>
                 </DockPanel>
                 <ItemsControl ItemsSource="{Binding Edges}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" ToolTip="{Binding Reason}" Focusable="True" KeyUp="Edge_KeyUp">
+                            <StackPanel Orientation="Horizontal" Focusable="True" KeyUp="Edge_KeyUp">
                                 <Label Content="{Binding Persons[0]}" Margin="5,5,0,5" Padding="3" MinWidth="150" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-                                <Grid>
-                                    <Line Stroke="Black" X2="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    <Label Foreground="Red" Content="X" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"
-                                           Visibility="{Binding Dislike, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                </Grid>
+                                <Line Stroke="Black" X2="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Label Content="{Binding Persons[1]}" Margin="0,5,5,5" Padding="3" MinWidth="150" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
                                 <Border Style="{StaticResource MaterialShadow}">
                                     <view:MaterialButton Click="RemoveEdge" Height="20" Margin="10,0,0,0">

@@ -72,8 +72,10 @@ namespace Kazetta
                     };
                     if (InstrumentMapping.ContainsKey(instrument))
                         person.Instrument = InstrumentMapping[instrument];
-                    else if (instrument.ToString().Contains("dallamh"))
+                    else if (instrument.ToString().ToLower().Contains("dallamh"))
                         person.Instrument = Instrument.Solo;
+                    else
+                        throw new Exception(instrument);
 
                     if (col[20].Value != "")
                         person.BandName = col[20].Value;

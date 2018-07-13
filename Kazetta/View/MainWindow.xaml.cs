@@ -199,7 +199,7 @@ namespace Kazetta
             {
                 viewModel.Edges.Add(edge);
                 //TODO megszuntetni, ha ezzel konfliktus allt elo
-                viewModel.Edge = new Edge { Dislike = edge.Dislike };
+                viewModel.Edge = new Edge();
             }
         }
 
@@ -246,7 +246,6 @@ namespace Kazetta
                 else if (newTab == ScheduleTab)
                 {
                     viewModel.InitSchedule();
-                    viewModel.StatusText = viewModel.Teachers[0].Name;
 
                     for (int i = 0; i < kcs.Count(); i++)
                         if (i < viewModel.Teachers.Count)
@@ -290,7 +289,24 @@ namespace Kazetta
 
         private void ClearKiscsoportok(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            foreach (Person p in viewModel.Students)
+            {
+                p.Teacher = p.VocalTeacher = null;
+                p.TimeSlot = p.VocalTimeSlot = -1;
+            }
+            foreach (var coll in viewModel.Schedule)
+                coll.Clear();
+        }
+
+        private void NewEdge_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                Person p = (Person)e.AddedItems[0];
+                PossiblePairs.ItemsSource = viewModel.CsoportokbaOsztando.Cast<Person>().Where(q => p != q && p.Instrument == q.Instrument);
+            }
+            else
+                PossiblePairs.ItemsSource = null;
         }
     }
 }
