@@ -2,8 +2,11 @@
 
 namespace Kazetta
 {
+    /// <summary>
+    /// Represents a group of people that will attend a lesson together
+    /// </summary>
     [Serializable]
-    public class Edge
+    public class Group
     {
         public Person[] Persons { get; set; } = new Person[2];
         

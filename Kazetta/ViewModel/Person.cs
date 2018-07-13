@@ -35,9 +35,6 @@ namespace Kazetta
             {
                 pinned = value;
                 RaisePropertyChanged();
-                foreach (Person p in kivelIgen)
-                    if (p.Pinned != value)
-                        p.Pinned = value;
             }
         }
 
@@ -69,8 +66,6 @@ namespace Kazetta
         public bool IsVocalistToo { get; set; }
         public bool IsVocalist => IsVocalistToo || Instrument == Instrument.Voice;
         
-        public string BandName { get; set; }
-
         private int timeSlot;
         public int TimeSlot
         {
@@ -102,35 +97,6 @@ namespace Kazetta
         public override string ToString()
         {
             return Name;
-        }
-
-
-        /// <summary>
-        /// These will be filled out by <see cref="Algorithms.ConvertEdges"/> 
-        /// </summary>
-        internal HashSet<Person> kivelIgen = new HashSet<Person>(), kivelNem = new HashSet<Person>();
-
-        /// <summary>
-        /// Traverse the graphs defined by kivelIgen and kivelNem.
-        /// Collect the transitively related nodes into these sets so that no further recursive traversal is needed during the algorithm.
-        /// </summary>
-        internal void CollectRecursiveEdges()
-        {
-            HashSet<Person> visitedSet = new HashSet<Person>();
-            Queue<Person> queue = new Queue<Person>();
-            foreach (Person p in kivelIgen)
-                queue.Enqueue(p);
-            while (queue.Count > 0)
-            {
-                Person p = queue.Dequeue();
-                kivelIgen.Add(p);
-                visitedSet.Add(p);
-                foreach (Person q in p.kivelIgen)
-                    if (!visitedSet.Contains(q))
-                        queue.Enqueue(q);
-                foreach (Person q in p.kivelNem)
-                    kivelNem.Add(q);
-            }
         }
     }
 }

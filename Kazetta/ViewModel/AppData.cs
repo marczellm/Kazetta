@@ -10,6 +10,6 @@ namespace Kazetta.ViewModel
     {
         public Person[] Students;
         public Person[] Teachers;
-        public Edge[] Edges;
+        public Group[] Groups;
     }
 }

@@ -40,20 +40,7 @@
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding ColorKiscsoports, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="False">
                                             <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding VisualizeConflicts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" Value="True">
-                                            <Setter Property="BorderBrush">
-                                                <Setter.Value>
-                                                    <MultiBinding>
-                                                        <MultiBinding.Converter>
-                                                            <view:ConflictBorderConverter/>
-                                                        </MultiBinding.Converter>
-                                                        <Binding />
-                                                        <Binding Path="DataContext" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}"/>
-                                                    </MultiBinding>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
+                                        </DataTrigger>                                        
                                     </Style.Triggers>
                                 </Style>
                             </Label.Style>

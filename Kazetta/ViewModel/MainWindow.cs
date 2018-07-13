@@ -106,17 +106,17 @@ namespace Kazetta.ViewModel
             ),
             new SortDescription("Name", ListSortDirection.Ascending));
 
-        private ObservableCollection2<Edge> edges;
-        public ObservableCollection2<Edge> Edges
+        private ObservableCollection2<Group> groups;
+        public ObservableCollection2<Group> Groups
         {
-            get { return edges ?? (edges = new ObservableCollection2<Edge>()); }
-            private set { edges = value; RaisePropertyChanged(); }
+            get { return groups ?? (groups = new ObservableCollection2<Group>()); }
+            private set { groups = value; RaisePropertyChanged(); }
         }
-        private Edge edge;
-        public Edge Edge
+        private Group newGroup;
+        public Group NewGroup
         {
-            get { return edge ?? (edge = new Edge()); }
-            set { edge = value; RaisePropertyChanged(); }
+            get { return newGroup ?? (newGroup = new Group()); }
+            set { newGroup = value; RaisePropertyChanged(); }
         }
         
         public Algorithms Algorithm { get; set; }
@@ -137,7 +137,7 @@ namespace Kazetta.ViewModel
                 {
                     Students = Students.ToArray(),
                     Teachers = Teachers.ToArray(),
-                    Edges = Edges.ToArray()
+                    Groups = Groups.ToArray()
                 };
             }
             set
@@ -145,7 +145,7 @@ namespace Kazetta.ViewModel
                 Students.AddRange(value.Students);
                 Teachers.QuietClear();                
                 Teachers.AddRange(value.Teachers);
-                Edges.AddRange(value.Edges);
+                Groups.AddRange(value.Groups);
                 // The XML serializer doesn't handle object references, so we replace Person copies with references
                 foreach (Person student in Students)
                 {
@@ -154,9 +154,9 @@ namespace Kazetta.ViewModel
                     if (student.VocalTeacher != null)
                         student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
                 }
-                foreach (Edge edge in Edges)
-                    for (int i = 0; i < edge.Persons.Count(); i++)
-                        edge.Persons[i] = Students.Single(p => p.Name == edge.Persons[i].Name);
+                foreach (Group group in Groups)
+                    for (int i = 0; i < group.Persons.Count(); i++)
+                        group.Persons[i] = Students.Single(p => p.Name == group.Persons[i].Name);
             }
         }
     }

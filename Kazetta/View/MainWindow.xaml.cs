@@ -108,7 +108,7 @@ namespace Kazetta
             };
             if (dialog.ShowDialog(this) == true)
             {
-                viewModel.Edges.Clear();
+                viewModel.Groups.Clear();
                 viewModel.Students.Clear();
                 viewModel.Teachers.QuietClear();
                 var people = await Task.Run<List<Person>>(() =>
@@ -189,36 +189,36 @@ namespace Kazetta
             }
         }
 
-        private void AddEdge(object sender, RoutedEventArgs e)
+        private void AddGroup(object sender, RoutedEventArgs e)
         {
-            var edge = viewModel.Edge;
-            if (edge.Persons.Contains(null))
+            var group = viewModel.NewGroup;
+            if (group.Persons.Contains(null))
                 return;
-            var p = edge.Persons;
+            var p = group.Persons;
             if (p[0] != p[1])
             {
-                viewModel.Edges.Add(edge);
+                viewModel.Groups.Add(group);
                 //TODO megszuntetni, ha ezzel konfliktus allt elo
-                viewModel.Edge = new Edge();
+                viewModel.NewGroup = new Group();
             }
         }
 
-        private void RemoveEdge(object sender, RoutedEventArgs e)
+        private void RemoveGroup(object sender, RoutedEventArgs e)
         {
-            Edge edge = (Edge)((FrameworkElement)sender).DataContext;
-            viewModel.Edges.Remove(edge);
+            Group group = (Group)((FrameworkElement)sender).DataContext;
+            viewModel.Groups.Remove(group);
         }
 
-        private void Edge_KeyUp(object sender, KeyEventArgs e)
+        private void Group_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
-                RemoveEdge(sender, null);
+                RemoveGroup(sender, null);
         }
 
         private void Reset(object sender, RoutedEventArgs e)
         {
             viewModel.Students.Clear();
-            viewModel.Edges.Clear();
+            viewModel.Groups.Clear();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -298,7 +298,7 @@ namespace Kazetta
                 coll.Clear();
         }
 
-        private void NewEdge_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void NewGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {

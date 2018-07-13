@@ -76,9 +76,6 @@ namespace Kazetta
                         person.Instrument = Instrument.Solo;
                     else
                         throw new Exception(instrument);
-
-                    if (col[20].Value != "")
-                        person.BandName = col[20].Value;
                     ppl.Add(person);
                 }
 

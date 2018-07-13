@@ -78,18 +78,18 @@
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                         <ComboBox ItemsSource="{Binding CsoportokbaOsztando}" 
                                   IsEditable="False" 
-                                  SelectedValue="{Binding Edge.Persons[0]}"
-                                  SelectionChanged="NewEdge_SelectionChanged"
+                                  SelectedValue="{Binding NewGroup.Persons[0]}"
+                                  SelectionChanged="NewGroup_SelectionChanged"
                                   MinWidth="100" 
                                   IsSynchronizedWithCurrentItem="False"/>
                         <Label Content=" és "/>
                         <ComboBox IsEditable="False"
-                                  SelectedValue="{Binding Edge.Persons[1]}"
+                                  SelectedValue="{Binding NewGroup.Persons[1]}"
                                   MinWidth="100"
                                   IsSynchronizedWithCurrentItem="False"
                                   x:Name="PossiblePairs"/>
                         <Border Style="{StaticResource MaterialShadow}">
-                            <view:MaterialButton Click="AddEdge" Height="20" Margin="10,0,0,0" IsDefault="True">
+                            <view:MaterialButton Click="AddGroup" Height="20" Margin="10,0,0,0" IsDefault="True">
                                 <Button.Content>
                                     <TextBlock Text="+" Margin="0,-6.5,0,0" FontSize="20"/>
                                 </Button.Content>
@@ -97,15 +97,15 @@
                         </Border>
                     </StackPanel>
                 </DockPanel>
-                <ItemsControl ItemsSource="{Binding Edges}" Margin="5">
+                <ItemsControl ItemsSource="{Binding Groups}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Focusable="True" KeyUp="Edge_KeyUp">
+                            <StackPanel Orientation="Horizontal" Focusable="True" KeyUp="Group_KeyUp">
                                 <Label Content="{Binding Persons[0]}" Margin="5,5,0,5" Padding="3" MinWidth="150" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
                                 <Line Stroke="Black" X2="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Label Content="{Binding Persons[1]}" Margin="0,5,5,5" Padding="3" MinWidth="150" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
                                 <Border Style="{StaticResource MaterialShadow}">
-                                    <view:MaterialButton Click="RemoveEdge" Height="20" Margin="10,0,0,0">
+                                    <view:MaterialButton Click="RemoveGroup" Height="20" Margin="10,0,0,0">
                                         <Button.Content>
                                             <TextBlock Text="×" Margin="0,-4,0,0" FontSize="14" FontWeight="Bold"/>
                                         </Button.Content>

@@ -15,32 +15,6 @@ namespace Kazetta
         {
             d = data;
             Beosztando = d.Students.Cast<Person>().ToList();
-            ConvertEdges();
-        }
-
-        /// <summary>
-        /// Convert the standalone Edge representation of constraints
-        /// to one that lists incompatible and must-go-together people in properties of the Person object.
-        /// 
-        /// This new representation also includes additional inferred constraints from band names
-        /// </summary>
-        private void ConvertEdges()
-        {
-            foreach(Person p in d.Students)
-            {
-                p.kivelIgen.Clear();
-                p.kivelNem.Clear();
-            }
-            
-            foreach (Person p in d.Students)
-                foreach (Person q in d.Students)
-                    if (p != q && p.BandName == q.BandName)
-                    {
-                        p.kivelIgen.Add(q);
-                        q.kivelIgen.Add(p);
-                    }
-            foreach (Person p in d.Students)
-                p.CollectRecursiveEdges();
         }
 
         private void AssignToKiscsoport(Person p, int kiscsoport)

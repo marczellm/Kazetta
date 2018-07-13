@@ -131,7 +131,6 @@
     <Compile Include="ViewModel\MainWindow.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\AnimatedDragHandler.cs" />
-    <Compile Include="View\ConflictBorderConverter.cs" />
     <Compile Include="View\DropHandler.cs" />
     <Compile Include="View\IntValidator.cs" />
     <Compile Include="View\KiscsoportColorConverter.cs" />

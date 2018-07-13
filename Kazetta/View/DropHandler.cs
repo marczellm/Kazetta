@@ -56,7 +56,7 @@ namespace Kazetta.View
             Person p = (Person)dropInfo.Data;
             if (target.Name == "AddOrRemovePersonButton") { 
                 D.Students.Remove(p);
-                D.Edges.RemoveAll(e => e.Persons.Contains(p));
+                D.Groups.RemoveAll(e => e.Persons.Contains(p));
             }
             else if (target.Name.StartsWith("kcs"))
             {
