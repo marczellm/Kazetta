@@ -6,7 +6,7 @@
 
     <!-- Definition of the drag-and-drop enabled ItemsControl -->
     <DataTemplate x:Key="adorner">
-        <Label Content="{Binding Name}" Margin="0,0,5,5" Padding="3" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+        <Label Content="{Binding}" Margin="0,0,5,5" Padding="3" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
     </DataTemplate>
     <Style TargetType="{x:Type view:DnDItemsControl}">
         <Setter Property="Margin" Value="5"/>
@@ -21,7 +21,7 @@
             <Setter.Value>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding Name}" Margin="0,0,5,5" Padding="3" Name="PersonButton" BorderThickness="2">
+                        <Label Content="{Binding}" Margin="0,0,5,5" Padding="3" Name="PersonButton" BorderThickness="2">
                             <Label.Style>
                                 <Style TargetType="Label">
                                     <Style.Triggers>                                        
@@ -45,7 +45,7 @@
                                 </Style>
                             </Label.Style>
                         </Label>                       
-                        <CheckBox IsChecked="{Binding Pinned}">
+                        <!--<CheckBox IsChecked="{Binding Pinned}">
                             <CheckBox.Style>
                                 <Style TargetType="CheckBox">
                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -81,7 +81,7 @@
                                     </Path>
                                 </ControlTemplate>
                             </CheckBox.Template>
-                        </CheckBox>
+                        </CheckBox>-->
                     </StackPanel>
                 </DataTemplate>
             </Setter.Value>

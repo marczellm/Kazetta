@@ -41,7 +41,7 @@
         <view:DropHandler DataContext="{Binding DataContext, Source={x:Reference MainWindowName}}" x:Key="DropHandler"/>
     </Window.Resources>
     <TabControl SelectionChanged="TabControl_SelectionChanged" Name="TabControl">
-        <TabItem Header="Résztvevők" Name="Resztvevok">
+        <TabItem Header="Résztvevők" Name="ParticipantsTab">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                     <Label DockPanel.Dock="Left" Content="Vedd fel a résztvevőket!"/>
@@ -72,7 +72,7 @@
                 </Grid>
             </DockPanel>
         </TabItem>
-        <TabItem Header="Csoportok" IsEnabled="{Binding PeopleNotEmpty}" Name="Megszoritasok">
+        <TabItem Header="Csoportok" IsEnabled="{Binding PeopleNotEmpty}" Name="GroupsTab">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
@@ -97,7 +97,7 @@
                         </Border>
                     </StackPanel>
                 </DockPanel>
-                <ItemsControl ItemsSource="{Binding Groups}" Margin="5">
+                <ItemsControl ItemsSource="{Binding UserGroups}" Margin="5">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Focusable="True" KeyUp="Group_KeyUp">
@@ -181,7 +181,7 @@
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}" Tag="13"/>
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}" Tag="14"/>
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}" Tag="15"/>
-                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
+                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Groups}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"
                                           Pinnable="False"/>

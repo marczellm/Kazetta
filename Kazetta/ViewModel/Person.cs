@@ -1,6 +1,5 @@
 ﻿using Kazetta.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Kazetta
@@ -37,7 +36,6 @@ namespace Kazetta
                 RaisePropertyChanged();
             }
         }
-
 
         private int birthYear = DateTime.Now.Year;
         public int BirthYear
@@ -93,6 +91,9 @@ namespace Kazetta
             get { return vocalTeacher; }
             set { vocalTeacher = value; RaisePropertyChanged(); }
         }
+
+        [XmlIgnore]
+        public Person Pair { get; set; }
 
         public override string ToString()
         {

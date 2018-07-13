@@ -22,9 +22,9 @@ namespace Kazetta.View
             {
                 if (source.Name == "PeopleView" && (target.Name == "PeopleView" || target.Name == "AddOrRemovePersonButton"))
                     dropInfo.Effects = DragDropEffects.Move;
-                else if (p.Pinned)
-                    D.StatusText = p + " le van rögzítve!";
-                else if (target.Name.StartsWith("kcs"))
+            }
+            else if (dropInfo.Data is Group g) { 
+                if (target.Name.StartsWith("kcs"))
                 {
                     Person targetTeacher = D.Teachers[int.Parse((string)target.Tag)];
 
@@ -34,8 +34,8 @@ namespace Kazetta.View
                         if (sourceTeacher.Instrument == targetTeacher.Instrument)
                             dropInfo.Effects = DragDropEffects.Move;
                     }
-                    else if (source.Name == "nokcs" && (p.Instrument == targetTeacher.Instrument
-                        || (p.IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)))
+                    else if (source.Name == "nokcs" && (g.Persons[0].Instrument == targetTeacher.Instrument
+                        || (g.Persons[0].IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)))
                         dropInfo.Effects = DragDropEffects.Move;
                 }
                 else if (target.Name == "nokcs")
@@ -53,48 +53,55 @@ namespace Kazetta.View
         {
             var target = (FrameworkElement)dropInfo.VisualTarget;
             var source = (FrameworkElement)dropInfo.DragInfo.VisualSource;
-            Person p = (Person)dropInfo.Data;
-            if (target.Name == "AddOrRemovePersonButton") { 
+            
+            if (target.Name == "AddOrRemovePersonButton") {
+                var p = (Person)dropInfo.Data;
                 D.Students.Remove(p);
                 D.Groups.RemoveAll(e => e.Persons.Contains(p));
             }
             else if (target.Name.StartsWith("kcs"))
             {
+                var g = (Group)dropInfo.Data;
                 var i = dropInfo.InsertIndex;
                 var teacher = D.Teachers[int.Parse((string)target.Tag)];
-                if (p.Instrument == teacher.Instrument)
+                if (g.Persons[0].Instrument == teacher.Instrument)
                 {
-                    p.TimeSlot = i;
-                    if (p.Teacher != null)
-                        D.Schedule[D.Teachers.IndexOf(p.Teacher)].Remove(p);
-                    p.Teacher = teacher;
+                    foreach (var p in g.Persons)
+                    {
+                        p.TimeSlot = i;
+                        if (p.Teacher != null)
+                            D.Schedule[D.Teachers.IndexOf(p.Teacher)].Remove(g);
+                        p.Teacher = teacher;
+                    }                    
                 }
-                else if (p.IsVocalistToo && teacher.Instrument == Instrument.Voice)
+                else if (g.Persons[0] is Person p && p.IsVocalistToo && teacher.Instrument == Instrument.Voice)
                 {
                     p.VocalTimeSlot = i;
                     if (p.VocalTeacher != null)
-                        D.Schedule[D.Teachers.IndexOf(p.VocalTeacher)].Remove(p);
+                        D.Schedule[D.Teachers.IndexOf(p.VocalTeacher)].Remove(g);
                     p.VocalTeacher = teacher;
                 }
                 else return;
 
-                var j = D.Students.IndexOf(p);
+                //var j = D.Students.IndexOf(g);
                 defaultDropHandler.Drop(dropInfo); // This locates the correct ObservableCollection and inserts p, but sometimes also removes it from Students
-                if (!D.Students.Contains(p))
-                    D.Students.Insert(j, p);
-
+                //if (!D.Students.Contains(g))
+                //    D.Students.Insert(j, g);
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
             {
                 int i = int.Parse((string)source.Tag);
-
+                var g = (Group)dropInfo.Data;
                 Person q = D.Teachers[i];
-                if (p.Teacher == q)
-                    p.Teacher = null;
-                else if (p.VocalTeacher == q)
-                    p.VocalTeacher = null;
+                foreach (Person p in g.Persons)
+                {
+                    if (p.Teacher == q)
+                        p.Teacher = null;
+                    else if (p.VocalTeacher == q)
+                        p.VocalTeacher = null;
+                }
 
-                D.Schedule[i].Remove(p);
+                D.Schedule[i].Remove(g);
             }
         }
     }
