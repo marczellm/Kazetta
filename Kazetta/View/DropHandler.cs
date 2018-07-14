@@ -2,13 +2,14 @@
 using System.Windows;
 using System.Linq;
 using Kazetta.ViewModel;
+using System.Windows.Controls;
+using System;
 
 namespace Kazetta.View
 {
     class DropHandler : FrameworkElement, IDropTarget
     {
         private ViewModel.MainWindow D => (ViewModel.MainWindow)DataContext;
-        private DefaultDropHandler defaultDropHandler = new DefaultDropHandler();
         /// <summary>
         /// Set where drops are allowed
         /// </summary>
@@ -28,13 +29,13 @@ namespace Kazetta.View
             {
                 if (target.Name.StartsWith("kcs"))
                 {
-                    Person targetTeacher = D.Teachers[int.Parse((string)target.Tag)];
+                    var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
                     p = g.Persons[0];
                     if (source != target && (p.Teacher == targetTeacher || p.VocalTeacher == targetTeacher))
                         return;
                     if (source.Name.StartsWith("kcs"))
                     {
-                        Person sourceTeacher = D.Teachers[int.Parse((string)source.Tag)];
+                        var sourceTeacher = (Person)((HeaderedItemsControl)source).Header;
                         if (sourceTeacher.Instrument == targetTeacher.Instrument)
                         {
                             dropInfo.Effects = DragDropEffects.Move;
@@ -69,62 +70,50 @@ namespace Kazetta.View
             }
             else if (target.Name.StartsWith("kcs"))
             {
+                Func<ObservableCollection2<Group>> sourceCollection = () => (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
+                var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
+
                 var g = (Group)dropInfo.Data;
-                int i = dropInfo.InsertIndex,
-                    j = int.Parse((string)target.Tag);
-                var teacher = D.Teachers[j];
-                if (g.Persons[0].Instrument == teacher.Instrument)
+                int i = dropInfo.InsertIndex;
+                var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
+                if (g.Persons[0].Instrument == targetTeacher.Instrument)
                 {
+                    var sourceTeacher = g.Persons[0].Teacher;
+                    if (sourceTeacher != null)                    
+                        sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();                    
                     foreach (var p in g.Persons)
                     {
-                        p.TimeSlot = i;
-                        if (p.Teacher != null)
-                        {
-                            int k = D.Teachers.IndexOf(p.Teacher);
-                            int m = D.Schedule[k].IndexOf(g);
-                            D.Schedule[k].Remove(g);
-                            D.Schedule[k].Insert(m, new Group());
-                        }
-                        p.Teacher = teacher;
+                        p.TimeSlot = i;                        
+                        p.Teacher = targetTeacher;
                     }                    
                 }
-                else if (g.Persons[0] is Person p && p.IsVocalistToo && teacher.Instrument == Instrument.Voice)
+                else if (g.Persons[0] is Person p && p.IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)
                 {
                     p.VocalTimeSlot = i;
                     if (p.VocalTeacher != null)
-                    {
-                        int k = D.Teachers.IndexOf(p.VocalTeacher);
-                        int m = D.Schedule[k].IndexOf(g);
-                        D.Schedule[k].Remove(g);
-                        D.Schedule[k].Insert(m, new Group());
-                    }
-                    p.VocalTeacher = teacher;
+                        sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();
+                    p.VocalTeacher = targetTeacher;
                 }
                 else return;
                 
-                var kcs = (ObservableCollection2<Group>)dropInfo.TargetCollection;
-                kcs.RemoveAt(dropInfo.InsertIndex % kcs.Count);
-                kcs.Insert(dropInfo.InsertIndex % kcs.Count, g);
-
-                if (g.Persons.Length > 1 || (g.Persons[0].Teacher != null && g.Persons[0].VocalTeacher != null))
-                    D.Groups.Remove(g);
+                targetCollection.RemoveAt(dropInfo.InsertIndex % targetCollection.Count);
+                targetCollection.Insert(dropInfo.InsertIndex % targetCollection.Count, g);
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
             {
-                int i = int.Parse((string)source.Tag);
+                var sourceCollection = (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
                 var g = (Group)dropInfo.Data;
-                Person q = D.Teachers[i];
+                var sourceTeacher = (Person)((HeaderedItemsControl)source).Header;
+
                 foreach (Person p in g.Persons)
                 {
-                    if (p.Teacher == q)
+                    if (p.Teacher == sourceTeacher)
                         p.Teacher = null;
-                    else if (p.VocalTeacher == q)
+                    else if (p.VocalTeacher == sourceTeacher)
                         p.VocalTeacher = null;
                 }
 
-                int j = D.Schedule[i].IndexOf(g);
-                D.Schedule[i].Remove(g);
-                D.Schedule[i].Insert(j, new Group());
+                sourceCollection[dropInfo.DragInfo.SourceIndex] = new Group();
             }
         }
     }
