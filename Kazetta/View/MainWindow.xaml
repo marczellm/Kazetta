@@ -76,7 +76,7 @@
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <ComboBox ItemsSource="{Binding CsoportokbaOsztando}" 
+                        <ComboBox ItemsSource="{Binding GroupEligible}" 
                                   IsEditable="False" 
                                   SelectedValue="{Binding NewGroup.Persons[0]}"
                                   SelectionChanged="NewGroup_SelectionChanged"

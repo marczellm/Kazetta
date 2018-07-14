@@ -3,7 +3,6 @@ using System.Windows;
 using System.Linq;
 using Kazetta.ViewModel;
 using System.Windows.Controls;
-using System;
 
 namespace Kazetta.View
 {
@@ -44,7 +43,7 @@ namespace Kazetta.View
                     }
                     else if (source.Name == "nokcs" && (p.Instrument == targetTeacher.Instrument &&
                             ((g.Persons.Length > 1 && p.Pair == g.Persons[1]) || ((g.Persons.Length == 1 && p.Pair == null)))
-                        || (p.IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)))
+                        || (p.IsVocalistToo && targetTeacher.IsVocalist)))
                     {
                         dropInfo.Effects = DragDropEffects.Move;
                         dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
@@ -62,7 +61,8 @@ namespace Kazetta.View
         {
             var target = (FrameworkElement)dropInfo.VisualTarget;
             var source = (FrameworkElement)dropInfo.DragInfo.VisualSource;
-            
+            ObservableCollection2<Group> sourceCollection() => (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
+
             if (target.Name == "AddOrRemovePersonButton") {
                 var p = (Person)dropInfo.Data;
                 D.Students.Remove(p);
@@ -70,38 +70,50 @@ namespace Kazetta.View
             }
             else if (target.Name.StartsWith("kcs"))
             {
-                Func<ObservableCollection2<Group>> sourceCollection = () => (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
                 var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
-
                 var g = (Group)dropInfo.Data;
                 int i = dropInfo.InsertIndex;
                 var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
-                if (g.Persons[0].Instrument == targetTeacher.Instrument)
+                var p = g.Persons[0];
+                if (p.Instrument == targetTeacher.Instrument)
                 {
-                    var sourceTeacher = g.Persons[0].Teacher;
-                    if (sourceTeacher != null)                    
+                    if (p.Teacher != null)                    
                         sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();                    
-                    foreach (var p in g.Persons)
+                    foreach (var q in g.Persons)
                     {
-                        p.TimeSlot = i;                        
-                        p.Teacher = targetTeacher;
-                    }                    
+                        q.TimeSlot = i;                        
+                        q.Teacher = targetTeacher;
+
+                        if (q.VocalTimeSlot == i)
+                        {
+                            int j = D.Teachers.IndexOf(q.VocalTeacher);
+                            q.VocalTeacher = null;
+                            if (j >= 0)
+                                D.Schedule[j][i] = new Group();
+                        }
+                    }         
                 }
-                else if (g.Persons[0] is Person p && p.IsVocalistToo && targetTeacher.Instrument == Instrument.Voice)
+                else if (p.IsVocalistToo && targetTeacher.IsVocalist)
                 {
-                    p.VocalTimeSlot = i;
                     if (p.VocalTeacher != null)
                         sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();
+                    p.VocalTimeSlot = i;
                     p.VocalTeacher = targetTeacher;
+
+                    if (p.TimeSlot == i)
+                    {
+                        int j = D.Teachers.IndexOf(p.Teacher);
+                        p.Teacher = null;
+                        if (j >= 0)
+                            D.Schedule[j][i] = new Group();
+                    }
                 }
                 else return;
-                
-                targetCollection.RemoveAt(dropInfo.InsertIndex % targetCollection.Count);
-                targetCollection.Insert(dropInfo.InsertIndex % targetCollection.Count, g);
+
+                targetCollection[dropInfo.InsertIndex % targetCollection.Count] = g;
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
             {
-                var sourceCollection = (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
                 var g = (Group)dropInfo.Data;
                 var sourceTeacher = (Person)((HeaderedItemsControl)source).Header;
 
@@ -113,7 +125,7 @@ namespace Kazetta.View
                         p.VocalTeacher = null;
                 }
 
-                sourceCollection[dropInfo.DragInfo.SourceIndex] = new Group();
+                sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();
             }
         }
     }

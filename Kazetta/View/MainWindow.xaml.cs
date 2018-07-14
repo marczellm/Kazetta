@@ -311,7 +311,7 @@ namespace Kazetta
             if (e.AddedItems.Count > 0)
             {
                 Person p = (Person)e.AddedItems[0];
-                PossiblePairs.ItemsSource = viewModel.CsoportokbaOsztando.Cast<Person>().Where(q => p != q && p.Instrument == q.Instrument);
+                PossiblePairs.ItemsSource = viewModel.GroupEligible.Cast<Person>().Where(q => p != q && p.Instrument == q.Instrument);
             }
             else
                 PossiblePairs.ItemsSource = null;

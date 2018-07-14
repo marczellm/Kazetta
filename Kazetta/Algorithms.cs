@@ -65,9 +65,9 @@ namespace Kazetta
         /// <returns>whether the algorithm was successful</returns>
         public bool NaiveFirstFit(CancellationToken? ct = null)
         {
-            foreach (Person p in Beosztando)
-                if (!p.Pinned)
-                    ;// p.Band = -1; //TODO
+            //foreach (Person p in Beosztando)
+            //    if (!p.Pinned)
+                    // p.Band = -1; //TODO
             //Beosztando.RemoveAll((Person p) => p.Band != -1);
 
             bool kesz = false;
