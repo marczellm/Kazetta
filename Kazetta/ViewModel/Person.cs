@@ -30,11 +30,7 @@ namespace Kazetta
         public bool Pinned
         {
             get { return pinned; }
-            set
-            {
-                pinned = value;
-                RaisePropertyChanged();
-            }
+            set { pinned = value; RaisePropertyChanged(); }
         }
 
         private int birthYear = DateTime.Now.Year;
@@ -95,9 +91,6 @@ namespace Kazetta
         [XmlIgnore]
         public Person Pair { get; set; }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;        
     }
 }

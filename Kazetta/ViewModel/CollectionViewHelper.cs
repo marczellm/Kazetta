@@ -17,14 +17,14 @@ namespace Kazetta.ViewModel
         /// <summary>
         /// Recursively enumerates all member accesses
         /// </summary>
-        public static List<string> AccessedProperties(Expression expression)
+        public static List<string> AccessedProperties<T>(Expression expression)
         {
-            if (expression is MemberExpression mem && mem.Expression.Type == typeof(Person))
+            if (expression is MemberExpression mem && mem.Expression.Type == typeof(T))
                 return new List<string> { mem.Member.Name };
             else if (expression is BinaryExpression bin)
-                return AccessedProperties(bin.Left).Concat(AccessedProperties(bin.Right)).ToList();
+                return AccessedProperties<T>(bin.Left).Concat(AccessedProperties<T>(bin.Right)).ToList();
             else if (expression is UnaryExpression un)
-                return AccessedProperties(un.Operand);
+                return AccessedProperties<T>(un.Operand);
             else return new List<string> { };
         }
 
@@ -33,16 +33,17 @@ namespace Kazetta.ViewModel
         /// <summary>
         /// Returns a newly created CollectionView that live filters the given collection by the given filter expression.
         /// </summary>
-        public static ICollectionView Get(object source, 
-            Expression<Func<object, bool>> filter,
+        public static ICollectionView Get<T> (object source, 
+            Expression<Func<T, bool>> filter,
             SortDescription? sortDescription = null)
         {
             CollectionViewSource cvs = new CollectionViewSource { Source = source, IsLiveFilteringRequested = true, IsLiveSortingRequested = true };
-            foreach (string prop in AccessedProperties(filter.Body))
+            foreach (string prop in AccessedProperties<T>(filter.Body))
                 cvs.LiveFilteringProperties.Add(prop);
             if (sortDescription != null)
                 cvs.LiveSortingProperties.Add(sortDescription?.PropertyName);
-            cvs.View.Filter = filter.Compile().Invoke;
+
+            cvs.View.Filter = (object obj) => filter.Compile().Invoke((T)obj);
             cvs.View.CollectionChanged += EmptyEventHandler;
             if (sortDescription != null)
                 cvs.View.SortDescriptions.Add(sortDescription.Value);
@@ -52,8 +53,8 @@ namespace Kazetta.ViewModel
         /// <summary>
         /// Returns the existing CollectionView for the given property name, or a newly created one if there is none
         /// </summary>
-        public static ICollectionView Lazy(object source, 
-            Expression<Func<object, bool>> filter, 
+        public static ICollectionView Lazy<T>(object source, 
+            Expression<Func<T, bool>> filter, 
             SortDescription? sortDescription = null, 
             [CallerMemberName] String name = "")
         {

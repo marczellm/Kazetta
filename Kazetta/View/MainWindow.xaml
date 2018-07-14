@@ -9,7 +9,7 @@
         xmlns:vm="clr-namespace:Kazetta.ViewModel"        
         mc:Ignorable="d"
         Name="MainWindowName" Title="Kazetta" 
-        Width="1024" Height="768"         
+        Width="1024" Height="900"         
         Background="Transparent"
         Closing="MainWindow_Closing"
         Loaded="MainWindow_Loaded">
@@ -131,7 +131,7 @@
                     <CheckBox IsChecked="{Binding MagicAllowed}" IsEnabled="{Binding MagicPossible}" VerticalAlignment="Center" ToolTip="Magic engedélyezése"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="MagicAnimation" Margin="20,0,0,0" DockPanel.Dock="Left"/>
                     
-                    <Button Content="Törlés" Padding="5" Click="ClearKiscsoportok" DockPanel.Dock="Right"/>
+                    <Button Content="Törlés" Padding="5" Click="ClearSchedule" DockPanel.Dock="Right"/>
                     <Button Content="Mentés" Padding="5" Click="SaveXLS" DockPanel.Dock="Right" Name="SaveButton"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="XLSSavingAnimation" Margin="20,0,20,0" DockPanel.Dock="Right"/>
                 </DockPanel>
@@ -159,9 +159,13 @@
                             <Style TargetType="view:DnDItemsControl">
                                 <Setter Property="Margin" Value="5"/>
                                 <Setter Property="dd:DragDrop.DropHandler" Value="{StaticResource DropHandler}"/>
-                                <Setter Property="ColorUjoncs" Value="True"/>
-                                <Setter Property="ColorLeaders" Value="True"/>
-                                <Setter Property="Pinnable" Value="True"/>
+                                <Setter Property="ItemsPanel">
+                                    <Setter.Value>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Vertical"/>
+                                        </ItemsPanelTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ResourceDictionary>
                     </Grid.Resources>
@@ -181,10 +185,16 @@
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}" Tag="13"/>
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}" Tag="14"/>
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}" Tag="15"/>
-                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Groups}" x:Name="nokcs"
+                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"
-                                          Pinnable="False"/>
+                                          Pinnable="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </view:DnDItemsControl>
                 </Grid>
             </DockPanel>
         </TabItem>        

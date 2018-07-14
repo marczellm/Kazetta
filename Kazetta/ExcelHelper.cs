@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 
 namespace Kazetta
 {
@@ -66,7 +63,7 @@ namespace Kazetta
                         Name = col[3].Value,
                         Sex = SexMapping[col[4].Value],                        
                         Level = LevelMapping[col[18].Value],
-                        IsVocalistToo = col[19].Value != "Nem",
+                        IsVocalistToo = col[19].Value == "Igen",
                         BirthYear = col[6].Value.Year,
                         Type = PersonType.Student
                     };
