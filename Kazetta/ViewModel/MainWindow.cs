@@ -193,6 +193,55 @@ namespace Kazetta.ViewModel
                    || (p.IsVocalistToo && teacher.IsVocalist);
         }
 
+        public void AssignTo(Group g, 
+            ObservableCollection2<Group> sourceCollection,
+            ObservableCollection2<Group> targetCollection,
+            Person targetTeacher,            
+            int sourceIndex,
+            int targetIndex,
+            bool overrideTimeslot)
+        {
+            int i = targetIndex;
+            var p = g.Persons[0];
+
+            if (p.Instrument == targetTeacher.Instrument)
+            {
+                if (p.Teacher != null)
+                    sourceCollection[sourceIndex] = new Group();
+                foreach (var q in g.Persons)
+                {
+                    q.TimeSlot = i;
+                    q.Teacher = targetTeacher;
+
+                    if (overrideTimeslot && q.VocalTimeSlot == i)
+                    {
+                        int j = Teachers.IndexOf(q.VocalTeacher);
+                        q.VocalTeacher = null;
+                        if (j >= 0)
+                            Schedule[j][i] = new Group();
+                    }
+                }
+            }
+            else if (p.IsVocalistToo && targetTeacher.IsVocalist)
+            {
+                if (p.VocalTeacher != null)
+                    sourceCollection[sourceIndex] = new Group();
+                p.VocalTimeSlot = i;
+                p.VocalTeacher = targetTeacher;
+
+                if (overrideTimeslot && p.TimeSlot == i)
+                {
+                    int j = Teachers.IndexOf(p.Teacher);
+                    p.Teacher = null;
+                    if (j >= 0)
+                        Schedule[j][i] = new Group();
+                }
+            }
+            else return;
+
+            targetCollection[targetIndex % targetCollection.Count] = g;
+        }
+
         public void ClearSchedule()
         {
             foreach (Person p in Students)

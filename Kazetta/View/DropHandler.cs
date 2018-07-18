@@ -68,47 +68,13 @@ namespace Kazetta.View
             }
             else if (target.Name.StartsWith("kcs"))
             {
-                var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
-                var g = (Group)dropInfo.Data;
-                int i = dropInfo.InsertIndex;
-                var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
-                var p = g.Persons[0];
-                if (p.Instrument == targetTeacher.Instrument)
-                {
-                    if (p.Teacher != null)                    
-                        sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();                    
-                    foreach (var q in g.Persons)
-                    {
-                        q.TimeSlot = i;                        
-                        q.Teacher = targetTeacher;
-
-                        if (q.VocalTimeSlot == i)
-                        {
-                            int j = D.Teachers.IndexOf(q.VocalTeacher);
-                            q.VocalTeacher = null;
-                            if (j >= 0)
-                                D.Schedule[j][i] = new Group();
-                        }
-                    }         
-                }
-                else if (p.IsVocalistToo && targetTeacher.IsVocalist)
-                {
-                    if (p.VocalTeacher != null)
-                        sourceCollection()[dropInfo.DragInfo.SourceIndex] = new Group();
-                    p.VocalTimeSlot = i;
-                    p.VocalTeacher = targetTeacher;
-
-                    if (p.TimeSlot == i)
-                    {
-                        int j = D.Teachers.IndexOf(p.Teacher);
-                        p.Teacher = null;
-                        if (j >= 0)
-                            D.Schedule[j][i] = new Group();
-                    }
-                }
-                else return;
-
-                targetCollection[dropInfo.InsertIndex % targetCollection.Count] = g;
+                D.AssignTo((Group)dropInfo.Data,
+                    sourceCollection(),
+                    (ObservableCollection2<Group>)dropInfo.TargetCollection,
+                    (Person)((HeaderedItemsControl)target).Header,
+                    dropInfo.DragInfo.SourceIndex,
+                    dropInfo.InsertIndex,
+                    true);
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
             {
