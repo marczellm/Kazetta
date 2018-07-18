@@ -168,6 +168,9 @@ namespace Kazetta.ViewModel
                         student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
                     if (student.VocalTeacher != null)
                         student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
+                    for (int i = 0; i < 2; i++)
+                        if (student.PreferredVocalTeachers[i] != null)
+                            student.PreferredVocalTeachers[i] = Teachers.Single(p => p.Name == student.PreferredVocalTeachers[i].Name);
                 }
                 foreach (Group group in Groups)
                 {
@@ -180,6 +183,27 @@ namespace Kazetta.ViewModel
                     }
                     group.CreateSubscriptions();
                 }
+            }
+        }
+
+        public bool CanAssign(Group g, Person teacher)
+        {
+            Person p = g.Persons[0];
+            return (p.Instrument == teacher.Instrument && ((g.Persons.Length > 1 && p.Pair == g.Persons[1]) || ((g.Persons.Length == 1 && p.Pair == null))))
+                   || (p.IsVocalistToo && teacher.IsVocalist);
+        }
+
+        public void ClearSchedule()
+        {
+            foreach (Person p in Students)
+            {
+                p.Teacher = p.VocalTeacher = null;
+                p.TimeSlot = p.VocalTimeSlot = -1;
+            }
+            foreach (var coll in Schedule)
+            {
+                coll.Clear();
+                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));
             }
         }
     }

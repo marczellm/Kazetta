@@ -257,8 +257,8 @@ namespace Kazetta
                         }
                         else
                             kcs[i].Visibility = Visibility.Collapsed;
-                    //viewModel.Algorithm = new Algorithms(viewModel);
-                    //viewModel.MagicPossible = true;
+                    viewModel.Algorithm = new Algorithms(viewModel);
+                    viewModel.MagicPossible = true;
                     //BindingOperations.SetBinding(SaveButton, IsEnabledProperty, SaveButtonBinding);
                 }
             }
@@ -294,16 +294,7 @@ namespace Kazetta
 
         private void ClearSchedule(object sender, RoutedEventArgs e)
         {
-            foreach (Person p in viewModel.Students)
-            {
-                p.Teacher = p.VocalTeacher = null;
-                p.TimeSlot = p.VocalTimeSlot = -1;
-            }
-            foreach (var coll in viewModel.Schedule)
-            {
-                coll.Clear();
-                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));
-            }
+            viewModel.ClearSchedule();
         }
 
         private void NewGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)

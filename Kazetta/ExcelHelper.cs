@@ -47,7 +47,7 @@ namespace Kazetta
             };
             try
             {                
-                Worksheet sheet = file.Worksheets[1];                
+                Worksheet sheet = file.Worksheets["Résztvevők"];
                 List<Person> ppl = new List<Person>();
                 
                 foreach(Range row in sheet.UsedRange.Rows)
@@ -73,7 +73,8 @@ namespace Kazetta
                         person.Instrument = Instrument.Solo;
                     else
                         throw new Exception(instrument);
-                    ppl.Add(person);
+                    if (person.Name != "Csima Zsolt")
+                        ppl.Add(person);
                 }
 
                 sheet = file.Worksheets["Tanárok"];
@@ -92,6 +93,21 @@ namespace Kazetta
                         Instrument = InstrumentMapping[col[2].Value],
                         Type = PersonType.Teacher
                     });
+                }
+
+                sheet = file.Worksheets["Énektanár preferenciák"];
+
+                foreach (Range row in sheet.UsedRange.Rows)
+                {
+                    if (row.Row == 1)
+                        continue;
+                    Range col = row.Columns;
+                    var name = col[2].Value;
+                    if (name == null)
+                        break;
+                    Person p = ppl.Find(q => q.Name == name);
+                    p.PreferredVocalTeachers[0] = ppl.Find(q => q.Name == col[3].value);
+                    p.PreferredVocalTeachers[1] = ppl.Find(q => q.Name == col[4].value);
                 }
 
                 return ppl;

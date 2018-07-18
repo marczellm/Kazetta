@@ -41,9 +41,7 @@ namespace Kazetta.View
                             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                         }
                     }
-                    else if (source.Name == "nokcs" && (p.Instrument == targetTeacher.Instrument &&
-                            ((g.Persons.Length > 1 && p.Pair == g.Persons[1]) || ((g.Persons.Length == 1 && p.Pair == null)))
-                        || (p.IsVocalistToo && targetTeacher.IsVocalist)))
+                    else if (g.Unscheduled && D.CanAssign(g, targetTeacher))
                     {
                         dropInfo.Effects = DragDropEffects.Move;
                         dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;

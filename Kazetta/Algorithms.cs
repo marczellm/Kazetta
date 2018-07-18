@@ -9,28 +9,13 @@ namespace Kazetta
     public class Algorithms
     {
         private ViewModel.MainWindow d;
-        private List<Person> Beosztando;
+        private readonly List<Person> Beosztando;
         private static Random rng = new Random();
         public Algorithms(ViewModel.MainWindow data)
         {
             d = data;
             Beosztando = d.Students.Cast<Person>().ToList();
-        }
-
-        private void AssignToKiscsoport(Person p, int kiscsoport)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Conflicts(Person p, int kiscsoport)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Conflicts(Person p, int kiscsoport, out string message)
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         /// <summary>
         /// Randomly shuffles a list using the Fisher-Yates shuffle.
@@ -48,15 +33,7 @@ namespace Kazetta
             }
             return list;
         }
-        /// <summary>
-        /// Generates all possible permutations of an enumerable
-        /// </summary>
-        private static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
-        {
-            if (length == 1) return list.Select(t => new T[] { t });
-            return GetPermutations(list, length - 1).SelectMany(t => list.Where(e => !t.Contains(e)), (t1, t2) => t1.Concat(new T[] { t2 }));
-        }
-
+        
         /// <summary>
         /// Runs a naive first fit algorithm to determine a proper "graph coloring".
         /// The success of such an algorithm depends only on the given ordering of nodes.
@@ -65,10 +42,7 @@ namespace Kazetta
         /// <returns>whether the algorithm was successful</returns>
         public bool NaiveFirstFit(CancellationToken? ct = null)
         {
-            //foreach (Person p in Beosztando)
-            //    if (!p.Pinned)
-                    // p.Band = -1; //TODO
-            //Beosztando.RemoveAll((Person p) => p.Band != -1);
+            d.ClearSchedule();
 
             bool kesz = false;
             while (!kesz && ct?.IsCancellationRequested != true) // generate random orderings of People and run the first-fit coloring until it is complete or cancelled
@@ -78,6 +52,27 @@ namespace Kazetta
                 foreach (Person p in Beosztando)
                 {
                     throw new NotImplementedException();
+                    //if (!p.Kiscsoportvezeto)
+                    //{
+                    //    var options = Enumerable.Range(0, m).Where(i => !Conflicts(p, i));
+                    //    if (options.Any())
+                    //    {
+                    //        if (p.Type == PersonType.Ujonc) // ha újonc, akkor próbáljuk olyan helyre tenni, ahol még kevés újonc van
+                    //            AssignToKiscsoport(p, options.MinBy(i => d.Kiscsoport(i).Count(q => q.Type == PersonType.Ujonc)));
+                    //        else // különben ahol kevés ember van
+                    //            AssignToKiscsoport(p, options.MinBy(i => d.Kiscsoport(i).Count()));
+                    //    }
+                    //    else // Nincs olyan kiscsoport, ahova be lehetne tenni => elölről kezdjük
+                    //    {
+                    //        foreach (Person q in Beosztando)
+                    //            if (!q.Kiscsoportvezeto)
+                    //                q.Kiscsoport = -1;
+                    //        foreach (Person q in Kiscsoportvezetok)
+                    //            AssignToKiscsoport(q, q.Kiscsoport);
+                    //        kesz = false;
+                    //        break;
+                    //    }
+                    //}
                 }
             }
             return kesz;
