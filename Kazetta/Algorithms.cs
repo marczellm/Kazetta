@@ -11,9 +11,10 @@ namespace Kazetta
         private ViewModel.MainWindow d;
         private readonly List<Group> Beosztando;
         private static Random rng = new Random();
-        private Object _lock = new Object();
-        public Algorithms(ViewModel.MainWindow data)
+        private readonly object _lock;
+        public Algorithms(ViewModel.MainWindow data, object _lock)
         {
+            this._lock = _lock;
             d = data;
             Beosztando = d.Groups.ToList();
 
@@ -38,6 +39,14 @@ namespace Kazetta
             return list;
         }
 
+        private int SpecialIndexOf<T>(T[] arr, T item)
+        {
+            var ret = Array.IndexOf(arr, item);
+            if (ret == -1)
+                ret = arr.Length;
+            return ret;
+        }
+
         /// <summary>
         /// Runs a naive first fit algorithm to determine a proper "graph coloring".
         /// The success of such an algorithm depends only on the given ordering of nodes.
@@ -48,7 +57,6 @@ namespace Kazetta
         {
             lock (_lock)
                 d.ClearSchedule();
-            Console.WriteLine(ct?.IsCancellationRequested);
             bool kesz = false;
             while (!kesz && ct?.IsCancellationRequested != true) // generate random orderings of People and run the first-fit coloring until it is complete or cancelled
             {
@@ -56,13 +64,19 @@ namespace Kazetta
                 Shuffle(Beosztando);
 
                 // Put advanced guitarists first.
-
                 bool isAdvancedGuitarist(Group g) {
                     Person p = g.Persons[0];
                     return p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced;
                 };
+                
+                foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)).ToList())
+                {
+                    Beosztando.Remove(g);
+                    Beosztando.Insert(0, g);
+                }
 
-                foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)))
+                // Put people with vocal teacher preferences first.
+                foreach (Group g in Beosztando.Where(g => g.Persons.Length == 1 && g.Persons[0].PreferredVocalTeachers.Any(x => x != null)).ToList())
                 {
                     Beosztando.Remove(g);
                     Beosztando.Insert(0, g);
@@ -72,6 +86,29 @@ namespace Kazetta
                 {
                     Person p = g.Persons[0];
 
+                    if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
+                    {
+                        var options = from i in Enumerable.Range(0, d.Teachers.Count)
+                                      from j in Enumerable.Range(0, 7)
+                                      where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
+                                      orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
+                                      select (i, j);
+
+                        if (options.Any())
+                        {
+                            var (i, j) = options.First();
+                            lock (_lock)
+                                d.AssignTo(g, i, j);
+                        }
+                        else
+                        {
+                            lock (_lock)
+                                d.ClearSchedule();
+                            kesz = false;
+                            break;
+                        }
+                    }
+
                     if (g.Persons.Length > 1 || p.Pair == null) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
@@ -79,30 +116,14 @@ namespace Kazetta
                                       where d.Teachers[i].Instrument == p.Instrument && d.CanAssign(g, i, j)
                                       select (i, j);
 
+                        if (p.Instrument == Instrument.Voice)
+                            options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));
+
                         if (isAdvancedGuitarist(g))
                             options = options.Where(tup => d.Teachers[tup.i].Name == "Gyárfás István");
 
-                        if (options.Any())
-                        {
-                            var (i, j) = options.First();
-                            lock (_lock)
-                                d.AssignTo(g, i, j);
-                        }
-                        else
-                        {
-                            lock (_lock)
-                                d.ClearSchedule();
-                            kesz = false;
-                            break;
-                        }
-                    }
-
-                    if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
-                    {
-                        var options = from i in Enumerable.Range(0, d.Teachers.Count)
-                                      from j in Enumerable.Range(0, 7)
-                                      where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
-                                      select (i, j);
+                        if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
+                            options = options.Where(tup => tup.j > 1);
 
                         if (options.Any())
                         {
@@ -117,7 +138,7 @@ namespace Kazetta
                             kesz = false;
                             break;
                         }
-                    }
+                    }                    
                 }
             }
             return kesz;

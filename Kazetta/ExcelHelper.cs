@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Kazetta
 {
@@ -104,10 +105,10 @@ namespace Kazetta
                     Range col = row.Columns;
                     var name = col[2].Value;
                     if (name == null)
-                        break;
+                        continue;
                     Person p = ppl.Find(q => q.Name == name);
-                    p.PreferredVocalTeachers[0] = ppl.Find(q => q.Name == col[3].value);
-                    p.PreferredVocalTeachers[1] = ppl.Find(q => q.Name == col[4].value);
+                    p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[3].value);
+                    p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].value);
                 }
 
                 return ppl;

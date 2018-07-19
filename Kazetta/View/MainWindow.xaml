@@ -96,6 +96,8 @@
                             </view:MaterialButton>
                         </Border>
                     </StackPanel>
+
+                    <Button DockPanel.Dock="Right" Content="Auto" Click="AutoCreateGroups" Padding="5"/>
                 </DockPanel>
                 <ItemsControl ItemsSource="{Binding UserGroups}" Margin="5">
                     <ItemsControl.ItemTemplate>
