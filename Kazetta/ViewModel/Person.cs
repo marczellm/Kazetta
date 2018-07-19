@@ -50,7 +50,7 @@ namespace Kazetta
         {
             get { return sex; }
             set { sex = value; RaisePropertyChanged(); }
-        }        
+        }
         private Level level;
         public Level Level
         {
@@ -59,7 +59,7 @@ namespace Kazetta
         }
         public bool IsVocalistToo { get; set; }
         public bool IsVocalist => IsVocalistToo || Instrument == Instrument.Voice;
-        
+
         private int timeSlot = -1;
         public int TimeSlot
         {
@@ -87,12 +87,17 @@ namespace Kazetta
             get { return vocalTeacher; }
             set { vocalTeacher = value; RaisePropertyChanged(); }
         }
-        
+
         [XmlIgnore]
-        public Person Pair { get; set; }
+        public Person Pair
+        {
+            get { return _pair; }
+            set { _pair = value; RaisePropertyChanged(); }
+        }
 
         public Person[] PreferredVocalTeachers = new Person[2];
+        private Person _pair;
 
-        public override string ToString() => Name;        
+        public override string ToString() => Name;
     }
 }

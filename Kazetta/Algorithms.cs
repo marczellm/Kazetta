@@ -46,7 +46,8 @@ namespace Kazetta
         /// <returns>whether the algorithm was successful</returns>
         public bool NaiveFirstFit(CancellationToken? ct = null)
         {
-            lock (_lock) { d.ClearSchedule(); }
+            lock (_lock)
+                d.ClearSchedule();
             Console.WriteLine(ct?.IsCancellationRequested);
             bool kesz = false;
             while (!kesz && ct?.IsCancellationRequested != true) // generate random orderings of People and run the first-fit coloring until it is complete or cancelled
@@ -57,7 +58,6 @@ namespace Kazetta
                 foreach (Group g in Beosztando)
                 {
                     Person p = g.Persons[0];
-                    Console.Write(g + ", ");
 
                     if (g.Persons.Length > 1 || p.Pair == null)
                     {
@@ -69,14 +69,14 @@ namespace Kazetta
                         if (options.Any())
                         {
                             var (i, j) = options.First();
-                            d.AssignTo(g, i, j);
+                            lock (_lock)
+                                d.AssignTo(g, i, j);
                         }
                         else
                         {
-                            lock (_lock) { d.ClearSchedule(); }
+                            lock (_lock)
+                                d.ClearSchedule();
                             kesz = false;
-                            Console.WriteLine();
-                            Console.WriteLine("Backtracking...");
                             break;
                         }
                     }
@@ -91,14 +91,14 @@ namespace Kazetta
                         if (options.Any())
                         {
                             var (i, j) = options.First();
-                            d.AssignTo(g, i, j);
+                            lock (_lock)
+                                d.AssignTo(g, i, j);
                         }
                         else
                         {
-                            lock (_lock) { d.ClearSchedule(); }
+                            lock (_lock)
+                                d.ClearSchedule();
                             kesz = false;
-                            Console.WriteLine();
-                            Console.WriteLine("Backtracking...");
                             break;
                         }
                     }
