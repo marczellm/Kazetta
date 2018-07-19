@@ -1,5 +1,4 @@
-﻿using MoreLinq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,12 +8,12 @@ namespace Kazetta
     public class Algorithms
     {
         private ViewModel.MainWindow d;
-        private readonly List<Person> Beosztando;
+        private readonly List<Group> Beosztando;
         private static Random rng = new Random();
         public Algorithms(ViewModel.MainWindow data)
         {
             d = data;
-            Beosztando = d.Students.Cast<Person>().ToList();
+            Beosztando = d.Groups.ToList();
         }        
 
         /// <summary>
@@ -45,34 +44,29 @@ namespace Kazetta
             d.ClearSchedule();
 
             bool kesz = false;
+            Console.WriteLine(Beosztando.Count);
             while (!kesz && ct?.IsCancellationRequested != true) // generate random orderings of People and run the first-fit coloring until it is complete or cancelled
             {
                 kesz = true;
-                Shuffle(Beosztando);
-                foreach (Person p in Beosztando)
+                //Shuffle(Beosztando);
+                foreach (Group g in Beosztando)
                 {
-                    throw new NotImplementedException();
-                    //if (!p.Kiscsoportvezeto)
-                    //{
-                    //    var options = Enumerable.Range(0, m).Where(i => !Conflicts(p, i));
-                    //    if (options.Any())
-                    //    {
-                    //        if (p.Type == PersonType.Ujonc) // ha újonc, akkor próbáljuk olyan helyre tenni, ahol még kevés újonc van
-                    //            AssignToKiscsoport(p, options.MinBy(i => d.Kiscsoport(i).Count(q => q.Type == PersonType.Ujonc)));
-                    //        else // különben ahol kevés ember van
-                    //            AssignToKiscsoport(p, options.MinBy(i => d.Kiscsoport(i).Count()));
-                    //    }
-                    //    else // Nincs olyan kiscsoport, ahova be lehetne tenni => elölről kezdjük
-                    //    {
-                    //        foreach (Person q in Beosztando)
-                    //            if (!q.Kiscsoportvezeto)
-                    //                q.Kiscsoport = -1;
-                    //        foreach (Person q in Kiscsoportvezetok)
-                    //            AssignToKiscsoport(q, q.Kiscsoport);
-                    //        kesz = false;
-                    //        break;
-                    //    }
-                    //}
+                    Console.WriteLine(g);
+                    var options = from i in Enumerable.Range(0, d.Teachers.Count)
+                                  from j in Enumerable.Range(0, 7)
+                                  where d.CanAssign(g, i, j)
+                                  select (i, j);
+
+                    if (options.Any())
+                    {
+                        var (i, j) = options.First();
+                        d.AssignTo(g, i, j);
+                    }
+                    else
+                    {
+                        d.ClearSchedule();
+                        kesz = false;
+                    }                    
                 }
             }
             return kesz;

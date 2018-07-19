@@ -264,7 +264,7 @@ namespace Kazetta
             }
         }
 
-        private async void Magic(object sender, RoutedEventArgs e)
+        private /* async */ void Magic(object sender, RoutedEventArgs e)
         {
             viewModel.StatusText = "";
             MagicAnimation.Visibility = Visibility.Visible;
@@ -281,7 +281,8 @@ namespace Kazetta
                 CancellationToken ct = cts.Token;
                 try
                 {
-                    if (!await Task.Run(() => alg.NaiveFirstFit(ct), ct))
+                    //if (!await Task.Run(() => alg.NaiveFirstFit(ct), ct))
+                    if (! alg.NaiveFirstFit(ct))
                         viewModel.StatusText = "Nem sikerült az automatikus beosztás!";
                 }
                 catch (AggregateException) { }

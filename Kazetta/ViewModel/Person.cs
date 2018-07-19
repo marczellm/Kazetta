@@ -88,6 +88,7 @@ namespace Kazetta
             set { vocalTeacher = value; RaisePropertyChanged(); }
         }
         
+        [XmlIgnore]
         public Person Pair { get; set; }
 
         public Person[] PreferredVocalTeachers = new Person[2];

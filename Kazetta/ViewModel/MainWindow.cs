@@ -97,13 +97,11 @@ namespace Kazetta.ViewModel
                 {
                     groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
                     if (groups[i].Persons.Length > 2)
-                        throw new Exception(groups[i].Persons.ToString());
+                        throw new Exception(groups[i].Persons.Length + " ember nem lehet egy csoportban");
                     groups[i].CreateSubscriptions();
                 }
                 Schedule.Add(new ObservableCollection2<Group>(groups));
             }
-            
-            //Schedule = schedule.Select(seq => new ObservableCollection2<Person>(seq.ToArray())).ToList();
 
             scheduleInited = true;
         }
@@ -189,8 +187,21 @@ namespace Kazetta.ViewModel
         public bool CanAssign(Group g, Person teacher)
         {
             Person p = g.Persons[0];
-            return (p.Instrument == teacher.Instrument && ((g.Persons.Length > 1 && p.Pair == g.Persons[1]) || ((g.Persons.Length == 1 && p.Pair == null))))
-                   || (p.IsVocalistToo && teacher.IsVocalist);
+            if (g.Persons.Length == 2)
+                return p.Instrument == teacher.Instrument;
+            else if (p.Pair != null)
+                return p.IsVocalistToo && teacher.IsVocalist;
+            else return p.Instrument == teacher.Instrument || p.IsVocalistToo && teacher.IsVocalist;
+        }
+
+        public bool CanAssign(Group g, int teacherIndex, int timeSlot)
+        {
+            return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot);
+        }
+
+        public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot=false)
+        {
+            AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, overrideTimeSlot);
         }
 
         public void AssignTo(Group g, 

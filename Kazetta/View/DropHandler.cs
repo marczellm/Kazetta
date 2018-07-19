@@ -69,7 +69,7 @@ namespace Kazetta.View
             else if (target.Name.StartsWith("kcs"))
             {
                 D.AssignTo((Group)dropInfo.Data,
-                    sourceCollection(),
+                    source.Name == "nokcs" ? null : sourceCollection(),
                     (ObservableCollection2<Group>)dropInfo.TargetCollection,
                     (Person)((HeaderedItemsControl)target).Header,
                     dropInfo.DragInfo.SourceIndex,
