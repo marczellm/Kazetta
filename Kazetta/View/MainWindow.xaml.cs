@@ -267,9 +267,7 @@ namespace Kazetta
             }
         }
 
-        private 
-             async
-            void Magic(object sender, RoutedEventArgs e)
+        private async void Magic(object sender, RoutedEventArgs e)
         {
             viewModel.StatusText = "";
             MagicAnimation.Visibility = Visibility.Visible;

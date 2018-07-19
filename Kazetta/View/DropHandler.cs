@@ -3,6 +3,7 @@ using System.Windows;
 using System.Linq;
 using Kazetta.ViewModel;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace Kazetta.View
 {
@@ -31,6 +32,8 @@ namespace Kazetta.View
                     var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
                     p = g.Persons[0];
                     if (source != target && (p.Teacher == targetTeacher || p.VocalTeacher == targetTeacher))
+                        return;
+                    if (dropInfo.InsertIndex >= ((IEnumerable<Group>)dropInfo.TargetCollection).Count())
                         return;
                     if (source.Name.StartsWith("kcs"))
                     {
@@ -71,8 +74,7 @@ namespace Kazetta.View
                 var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
                 int i = dropInfo.InsertIndex;
                 var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
-                                
-                foreach(var p in targetCollection[i].Persons)
+                foreach (var p in targetCollection[i].Persons)
                 {
                     if (p.Teacher == targetTeacher)
                     {
@@ -84,7 +86,7 @@ namespace Kazetta.View
                         p.VocalTeacher = null;
                         p.VocalTimeSlot = -1;
                     }
-                }
+                }                
                 
                 D.AssignTo((Group)dropInfo.Data,
                     source.Name == "nokcs" ? null : sourceCollection(),
