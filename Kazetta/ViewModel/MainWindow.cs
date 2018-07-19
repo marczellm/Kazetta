@@ -18,7 +18,7 @@ namespace Kazetta.ViewModel
         /// </summary>
         public bool PeopleNotEmpty => Students.Any();
 
-        private bool magicAllowed = false;
+        private bool magicAllowed = true;
         private bool magicPossible = false;
         public bool MagicAllowed { get { return magicAllowed; } set { magicAllowed = value; RaisePropertyChanged("MagicEnabled"); } }
         public bool MagicPossible { get { return magicPossible; } set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
@@ -196,7 +196,8 @@ namespace Kazetta.ViewModel
 
         public bool CanAssign(Group g, int teacherIndex, int timeSlot)
         {
-            return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot);
+            return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
+                && ! Schedule[teacherIndex][timeSlot].Persons.Any();
         }
 
         public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot=false)
@@ -263,7 +264,7 @@ namespace Kazetta.ViewModel
             foreach (var coll in Schedule)
             {
                 coll.Clear();
-                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));
+                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));                
             }
         }
     }

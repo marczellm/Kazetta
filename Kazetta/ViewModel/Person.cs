@@ -60,7 +60,7 @@ namespace Kazetta
         public bool IsVocalistToo { get; set; }
         public bool IsVocalist => IsVocalistToo || Instrument == Instrument.Voice;
         
-        private int timeSlot;
+        private int timeSlot = -1;
         public int TimeSlot
         {
             get { return timeSlot; }
@@ -74,7 +74,7 @@ namespace Kazetta
             set { teacher = value; RaisePropertyChanged(); }
         }
 
-        private int vocalTimeSlot;
+        private int vocalTimeSlot = -1;
         public int VocalTimeSlot
         {
             get { return vocalTimeSlot; }

@@ -68,12 +68,30 @@ namespace Kazetta.View
             }
             else if (target.Name.StartsWith("kcs"))
             {
+                var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
+                int i = dropInfo.InsertIndex;
+                var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
+                                
+                foreach(var p in targetCollection[i].Persons)
+                {
+                    if (p.Teacher == targetTeacher)
+                    {
+                        p.Teacher = null;
+                        p.TimeSlot = -1;
+                    }
+                    else if (p.VocalTeacher == targetTeacher)
+                    {
+                        p.VocalTeacher = null;
+                        p.VocalTimeSlot = -1;
+                    }
+                }
+                
                 D.AssignTo((Group)dropInfo.Data,
                     source.Name == "nokcs" ? null : sourceCollection(),
-                    (ObservableCollection2<Group>)dropInfo.TargetCollection,
-                    (Person)((HeaderedItemsControl)target).Header,
+                    targetCollection,
+                    targetTeacher,
                     dropInfo.DragInfo.SourceIndex,
-                    dropInfo.InsertIndex,
+                    i,
                     true);
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
