@@ -52,7 +52,7 @@ namespace Kazetta
             set { sex = value; RaisePropertyChanged(); }
         }
         private Level level;
-        public Level Level
+        public Level SkillLevel
         {
             get { return level; }
             set { level = value; RaisePropertyChanged(); }

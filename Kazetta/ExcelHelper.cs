@@ -62,7 +62,7 @@ namespace Kazetta
                     {
                         Name = col[3].Value,
                         Sex = SexMapping[col[4].Value],                        
-                        Level = LevelMapping[col[18].Value],
+                        SkillLevel = LevelMapping[col[18].Value],
                         IsVocalistToo = col[19].Value == "Igen",
                         BirthYear = col[6].Value.Year,
                         Type = PersonType.Student

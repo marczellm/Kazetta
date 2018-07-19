@@ -113,7 +113,7 @@ namespace Kazetta.ViewModel
         }
 
         public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Person>(Students, p => p.Type == PersonType.Student && p.Pair == null
-                                                                                                && ((p.Instrument == Instrument.Guitar && p.Level != Level.Advanced)
+                                                                                                && ((p.Instrument == Instrument.Guitar && p.SkillLevel != Level.Advanced)
                                                                                                    || p.Instrument == Instrument.Solo));
         public ICollectionView Unscheduled => CollectionViewHelper.Lazy<Group>(Groups, g => g.Unscheduled);
 

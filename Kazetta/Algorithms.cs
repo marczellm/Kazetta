@@ -37,7 +37,7 @@ namespace Kazetta
             }
             return list;
         }
-        
+
         /// <summary>
         /// Runs a naive first fit algorithm to determine a proper "graph coloring".
         /// The success of such an algorithm depends only on the given ordering of nodes.
@@ -55,16 +55,32 @@ namespace Kazetta
                 kesz = true;
                 Shuffle(Beosztando);
 
+                // Put advanced guitarists first.
+
+                bool isAdvancedGuitarist(Group g) {
+                    Person p = g.Persons[0];
+                    return p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced;
+                };
+
+                foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)))
+                {
+                    Beosztando.Remove(g);
+                    Beosztando.Insert(0, g);
+                }
+
                 foreach (Group g in Beosztando)
                 {
                     Person p = g.Persons[0];
 
-                    if (g.Persons.Length > 1 || p.Pair == null)
+                    if (g.Persons.Length > 1 || p.Pair == null) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
                                       where d.Teachers[i].Instrument == p.Instrument && d.CanAssign(g, i, j)
                                       select (i, j);
+
+                        if (isAdvancedGuitarist(g))
+                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyárfás István");
 
                         if (options.Any())
                         {
@@ -81,7 +97,7 @@ namespace Kazetta
                         }
                     }
 
-                    if (g.Persons.Length == 1 && p.IsVocalistToo)
+                    if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
