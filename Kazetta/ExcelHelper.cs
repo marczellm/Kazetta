@@ -61,7 +61,7 @@ namespace Kazetta
                         break;
                     var person = new Person
                     {
-                        Name = col[3].Value,
+                        Name = col[3].Value.Trim(),
                         Sex = SexMapping[col[4].Value],                        
                         SkillLevel = LevelMapping[col[18].Value],
                         IsVocalistToo = col[19].Value == "Igen",
@@ -90,7 +90,7 @@ namespace Kazetta
                         break;
                     ppl.Add(new Person
                     {
-                        Name = col[1].Value,
+                        Name = col[1].Value.Trim(),
                         Instrument = InstrumentMapping[col[2].Value],
                         Type = PersonType.Teacher
                     });
@@ -103,12 +103,12 @@ namespace Kazetta
                     if (row.Row == 1)
                         continue;
                     Range col = row.Columns;
-                    var name = col[2].Value;
+                    string name = col[2].Value;
                     if (name == null)
                         continue;
-                    Person p = ppl.Find(q => q.Name == name);
-                    p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[3].value);
-                    p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].value);
+                    Person p = ppl.Find(q => q.Name == name.Trim());
+                    p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[3].Value);
+                    p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].Value);
                 }
 
                 return ppl;
