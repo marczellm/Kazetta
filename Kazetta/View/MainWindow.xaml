@@ -131,6 +131,7 @@
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False" Width="Auto">
                     <Button Content="Magic" Padding="5" Click="Magic" DockPanel.Dock="Left" Name="MagicButton" IsEnabled="{Binding MagicEnabled}"/>
                     <CheckBox IsChecked="{Binding MagicAllowed}" IsEnabled="{Binding MagicPossible}" VerticalAlignment="Center" ToolTip="Magic engedélyezése"/>
+                    <CheckBox IsChecked="{Binding AdvancedGuitarists}" VerticalAlignment="Center" Content="Haladó gitárosok Gyafihoz"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="MagicAnimation" Margin="20,0,0,0" DockPanel.Dock="Left"/>
                     
                     <Button Content="Törlés" Padding="5" Click="ClearSchedule" DockPanel.Dock="Right"/>

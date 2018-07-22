@@ -68,11 +68,14 @@ namespace Kazetta
                     Person p = g.Persons[0];
                     return p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced;
                 };
-                
-                foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)).ToList())
+
+                if (d.AdvancedGuitarists)
                 {
-                    Beosztando.Remove(g);
-                    Beosztando.Insert(0, g);
+                    foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)).ToList())
+                    {
+                        Beosztando.Remove(g);
+                        Beosztando.Insert(0, g);
+                    }
                 }
 
                 // Put people with vocal teacher preferences first.
@@ -119,7 +122,7 @@ namespace Kazetta
                         if (p.Instrument == Instrument.Voice)
                             options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));
 
-                        if (isAdvancedGuitarist(g))
+                        if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
                             options = options.Where(tup => d.Teachers[tup.i].Name == "Gyárfás István");
 
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots

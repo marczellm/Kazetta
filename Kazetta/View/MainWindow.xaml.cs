@@ -314,7 +314,7 @@ namespace Kazetta
 
         private void AutoCreateGroups(object sender, RoutedEventArgs e)
         {
-            var groupEligible = viewModel.GroupEligible.Cast<Person>().ToList();
+            var groupEligible = viewModel.GroupEligible.Cast<Person>().Where(p => !(p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced)).ToList();            
             while (groupEligible.Count > 1)
             {
                 Person p = groupEligible.First();

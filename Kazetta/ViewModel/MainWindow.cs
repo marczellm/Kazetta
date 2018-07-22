@@ -23,6 +23,8 @@ namespace Kazetta.ViewModel
         public bool MagicPossible { get { return magicPossible; } set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
         public bool MagicEnabled => MagicAllowed && MagicPossible;
 
+        public bool AdvancedGuitarists { get; set; }
+
         private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             RaisePropertyChanged("PeopleNotEmpty");
@@ -117,8 +119,7 @@ namespace Kazetta.ViewModel
         }
 
         public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Person>(Students, p => p.Type == PersonType.Student && p.Pair == null
-                                                                                                && ((p.Instrument == Instrument.Guitar && p.SkillLevel != Level.Advanced)
-                                                                                                   || p.Instrument == Instrument.Solo));
+                                                                                                && (p.Instrument == Instrument.Guitar || p.Instrument == Instrument.Solo));
         public ICollectionView Unscheduled => CollectionViewHelper.Lazy<Group>(Groups, g => g.Unscheduled);
 
         private ObservableCollection2<Group> groups;
