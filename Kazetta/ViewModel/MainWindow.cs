@@ -93,8 +93,8 @@ namespace Kazetta.ViewModel
             foreach (var t in Teachers)
             {
                 var students = Students.Where(p => p.Teacher == t || p.VocalTeacher == t).ToList();
-                Group[] groups = new Group[7];
-                for (int i = 0; i < 7; i++)
+                Group[] groups = new Group[Algorithms.NumberOfSlots];
+                for (int i = 0; i < Algorithms.NumberOfSlots; i++)
                 {
                     groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
                     if (groups[i].Persons.Length > 2)
@@ -171,6 +171,14 @@ namespace Kazetta.ViewModel
                         student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
                     if (student.VocalTeacher != null)
                         student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
+                    if (student.PreferredTeacher != null)
+                        student.PreferredTeacher = Teachers.Single(p => p.Name == student.PreferredTeacher.Name);
+                    if (student.PreferredVocalTeacher != null)
+                        student.PreferredVocalTeacher = Teachers.Single(p => p.Name == student.PreferredVocalTeacher.Name);
+                    if (student.AvoidTeacher != null)
+                        student.AvoidTeacher = Teachers.Single(p => p.Name == student.AvoidTeacher.Name);
+                    if (student.AvoidVocalTeacher != null)
+                        student.AvoidVocalTeacher = Teachers.Single(p => p.Name == student.AvoidVocalTeacher.Name);
                     for (int i = 0; i < 2; i++)
                         if (student.PreferredVocalTeachers[i] != null)
                             student.PreferredVocalTeachers[i] = Teachers.Single(p => p.Name == student.PreferredVocalTeachers[i].Name);
@@ -202,28 +210,28 @@ namespace Kazetta.ViewModel
         public bool CanAssign(Group g, int teacherIndex, int timeSlot)
         {
             return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
-                && ! Schedule[teacherIndex][timeSlot].Persons.Any();
+                                                        && !Schedule[teacherIndex][timeSlot].Persons.Any();
         }
 
         public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot=false)
         {
             AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, overrideTimeSlot);
         }
-        
-        public void AssignTo(Group g, 
-            ObservableCollection2<Group> sourceCollection,
-            ObservableCollection2<Group> targetCollection,
-            Person targetTeacher,            
-            int sourceIndex,
-            int targetIndex,
-            bool overrideTimeslot)
+
+        public void AssignTo(Group g,
+                             ObservableCollection2<Group> sourceCollection,
+                             ObservableCollection2<Group> targetCollection,
+                             Person targetTeacher,
+                             int sourceIndex,
+                             int targetIndex,
+                             bool overrideTimeslot)
         {
             int i = targetIndex;
             var p = g.Persons[0];
 
             if (p.Instrument == targetTeacher.Instrument)
             {
-                if (p.Teacher != null)
+                if (p.Teacher != null && sourceCollection != null)
                     sourceCollection[sourceIndex] = new Group();
                 foreach (var q in g.Persons)
                 {
@@ -241,7 +249,7 @@ namespace Kazetta.ViewModel
             }
             else if (p.IsVocalistToo && targetTeacher.IsVocalist)
             {
-                if (p.VocalTeacher != null)
+                if (p.VocalTeacher != null && sourceCollection != null)
                     sourceCollection[sourceIndex] = new Group();
                 p.VocalTimeSlot = i;
                 p.VocalTeacher = targetTeacher;
@@ -271,7 +279,7 @@ namespace Kazetta.ViewModel
             foreach (var coll in Schedule)
             {
                 coll.Clear();
-                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));                
+                coll.AddRange(Enumerable.Range(0, (int)Algorithms.NumberOfSlots).Select(_ => new Group()));                
             }
         }
 

@@ -10,6 +10,7 @@ namespace Kazetta
     {
         private ViewModel.MainWindow d;
         private readonly List<Group> Beosztando;
+        public const uint NumberOfSlots = 7;
         private static Random rng = new Random();
         private readonly object _lock;
         public Algorithms(ViewModel.MainWindow data, object _lock)
@@ -78,12 +79,13 @@ namespace Kazetta
                     }
                 }
 
-                // Put people with vocal teacher preferences first.
-                foreach (Group g in Beosztando.Where(g => g.Persons.Length == 1 && g.Persons[0].PreferredVocalTeachers.Any(x => x != null)).ToList())
+                // Put people with teacher preferences first.
+                foreach (Group g in Beosztando.Where(g => g.Persons.Length == 1 && (g.Persons[0].PreferredTeacher != null || g.Persons[0].PreferredVocalTeacher != null)).ToList())
                 {
                     Beosztando.Remove(g);
                     Beosztando.Insert(0, g);
                 }
+
 
                 foreach (Group g in Beosztando)
                 {
@@ -92,9 +94,9 @@ namespace Kazetta
                     if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
-                                      from j in Enumerable.Range(0, 7)
-                                      where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
-                                      orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
+                                      from j in Enumerable.Range(0, (int)NumberOfSlots)
+                                      where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j) && d.Teachers[i] != p.AvoidVocalTeacher
+                                      orderby d.Teachers[i] == p.PreferredVocalTeacher ? 0 : 1
                                       select (i, j);
 
                         if (options.Any())
@@ -115,15 +117,16 @@ namespace Kazetta
                     if (g.Persons.Length > 1 || p.Pair == null) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
-                                      from j in Enumerable.Range(0, 7)
-                                      where d.Teachers[i].Instrument == p.Instrument && d.CanAssign(g, i, j)
+                                      from j in Enumerable.Range(0, (int)NumberOfSlots)
+                                      where d.Teachers[i].Instrument == p.Instrument && d.CanAssign(g, i, j) && d.Teachers[i] != p.AvoidTeacher
+                                      orderby d.Teachers[i] == p.PreferredTeacher ? 0 : 1
                                       select (i, j);
 
                         if (p.Instrument == Instrument.Voice)
                             options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));
 
                         if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
-                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyárfás István");
+                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyarmati Fanny");
 
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
                             options = options.Where(tup => tup.j > 1);

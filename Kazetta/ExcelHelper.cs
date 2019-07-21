@@ -18,7 +18,7 @@ namespace Kazetta
         public static List<Person> LoadXLS(string filename)
         {
             var excel = new Microsoft.Office.Interop.Excel.Application();
-            Workbook file = excel.Workbooks.Open(filename);
+            Workbook file = excel.Workbooks.Open(filename, ReadOnly:true);
             var SexMapping = new Dictionary<String, Sex>
             {
                 { "Nő", Sex.Female },
@@ -56,26 +56,38 @@ namespace Kazetta
                     if (row.Row == 1)
                         continue;
                     Range col = row.Columns;
-                    var instrument = col[17].Value;
-                    if (instrument == null)
+                    if (col[3].Value == null)
                         break;
+
+                    string name = col[3].Value.Trim();
+                    if (name == "Csima Zsolt" || name.Contains ("Grafné"))
+                        continue;
+                    
                     var person = new Person
                     {
-                        Name = col[3].Value.Trim(),
+                        Name = name,
+                        Email = col[2].Value,
                         Sex = SexMapping[col[4].Value],                        
                         SkillLevel = LevelMapping[col[18].Value],
                         IsVocalistToo = col[19].Value == "Igen",
                         BirthYear = col[6].Value.Year,
                         Type = PersonType.Student
                     };
+                    var instrument = col[17].Value;
                     if (InstrumentMapping.ContainsKey(instrument))
                         person.Instrument = InstrumentMapping[instrument];
                     else if (instrument.ToString().ToLower().Contains("dallamh"))
                         person.Instrument = Instrument.Solo;
+                    else if (instrument.ToString().ToLower().Contains("zongor"))
+                        person.Instrument = Instrument.Keyboards;
                     else
                         throw new Exception(instrument);
-                    if (person.Name != "Csima Zsolt")
-                        ppl.Add(person);
+
+                    if (person.Instrument == Instrument.Voice)
+                        person.IsVocalistToo = false;
+
+                    ppl.Add(person);
+                    
                 }
 
                 sheet = file.Worksheets["Tanárok"];
@@ -96,21 +108,75 @@ namespace Kazetta
                     });
                 }
 
-                sheet = file.Worksheets["Énektanár preferenciák"];
+                sheet = file.Worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Énektanár preferenciák");
 
-                foreach (Range row in sheet.UsedRange.Rows)
+                if (sheet != null)
                 {
-                    if (row.Row == 1)
-                        continue;
-                    Range col = row.Columns;
-                    string name = col[2].Value;
-                    if (name == null)
-                        continue;
-                    Person p = ppl.Find(q => q.Name == name.Trim());
-                    p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[3].Value);
-                    p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].Value);
+                    foreach (Range row in sheet.UsedRange.Rows)
+                    {
+                        if (row.Row == 1)
+                            continue;
+                        Range col = row.Columns;
+                        string name = col[2].Value;
+                        if (name == null)
+                            continue;
+                        Person p = ppl.Find(q => q.Name == name.Trim());
+                        p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[3].Value);
+                        p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].Value);
+                    }
                 }
 
+                sheet = file.Worksheets.OfType<Worksheet>().FirstOrDefault(ws => ws.Name == "Tanárválasztás");
+
+                if (sheet != null)
+                {
+                    foreach (Range row in sheet.UsedRange.Rows)
+                    {
+                        if (row.Row == 1)
+                            continue;
+                        Range col = row.Columns;
+                        string email = col[2].Value;                        
+                        string teacherName = col[6].Value;
+                        string vocalTeacherName = col[8].Value;
+                        if (email == null)
+                            break;
+                        bool likesTeacher = col[5].Value == "IGEN";
+                        bool likesVocalTeacher = col[7].Value == "IGEN";
+                        Person p = ppl.Find(q => q.Email == email.Trim());
+                        if (teacherName != null)
+                        {
+                            Person teacher = ppl.Find(q => q.Name == teacherName.Trim());
+                            if (likesTeacher)
+                                p.PreferredTeacher = teacher;
+                            else
+                                p.AvoidTeacher = teacher;                            
+                        }
+                        if (vocalTeacherName != null)
+                        {
+                            Person vocalTeacher = ppl.Find(q => q.Name == vocalTeacherName.Trim());
+                            if (likesVocalTeacher)
+                            {
+                                p.PreferredVocalTeacher = vocalTeacher;
+                                p.PreferredVocalTeachers[0] = vocalTeacher;
+                            }
+                            else
+                                p.AvoidVocalTeacher = vocalTeacher;
+                        }                                                
+                    }
+                }
+
+                // Culling: if there are more vocalists then vocalist slots, then discard the youngest vocalists
+                int numberOfVocalists = ppl.Count(p => p.Type == PersonType.Student && p.IsVocalist);
+                int numberOfVocalTeachers = ppl.Count(p => p.Type == PersonType.Teacher && p.IsVocalist);
+                int diff = numberOfVocalists - numberOfVocalTeachers * (int)Algorithms.NumberOfSlots;
+                if (diff > 0)
+                {
+                    var range = (from p in ppl
+                                where p.Type == PersonType.Student && p.IsVocalist
+                                orderby p.BirthYear descending
+                                select p).Take (diff).ToList ();
+                    Console.WriteLine(range);
+                }
                 return ppl;
             }
             finally

@@ -13,6 +13,7 @@ namespace Kazetta
     public class Person : ViewModelBase
     {
         public string Name { get; set; }
+        public string Email { get; set; }
         private PersonType type;
         public PersonType Type
         {
@@ -95,7 +96,13 @@ namespace Kazetta
             set { _pair = value; RaisePropertyChanged(); }
         }
 
+        public Person PreferredTeacher { get; set; }
+        public Person AvoidTeacher { get; set; }
+        public Person PreferredVocalTeacher { get; set; }
+        public Person AvoidVocalTeacher { get; set; }
+
         public Person[] PreferredVocalTeachers = new Person[2];
+        
         private Person _pair;
 
         public override string ToString() => Name;

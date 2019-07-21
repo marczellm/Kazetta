@@ -22,7 +22,7 @@ namespace Kazetta
         public MainWindow()
         {
             InitializeComponent();
-            kcs = new DnDItemsControl[] { kcs1, kcs2, kcs3, kcs4, kcs5, kcs6, kcs7, kcs8, kcs9, kcs10, kcs11, kcs12, kcs13, kcs14, kcs15, kcs16 };
+            kcs = new DnDItemsControl[] { kcs1, kcs2, kcs3, kcs4, kcs5, kcs6, kcs7, kcs8, kcs9, kcs10, kcs11, kcs12, kcs13, kcs14, kcs15, kcs16, kcs17, kcs18 };
             string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Kazetta");
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
