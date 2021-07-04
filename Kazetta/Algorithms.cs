@@ -123,7 +123,7 @@ namespace Kazetta
                             options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));
 
                         if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
-                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyárfás István");
+                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyarmati Fanny");
 
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
                             options = options.Where(tup => tup.j > 1);

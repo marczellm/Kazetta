@@ -6,8 +6,8 @@
         xmlns:hammer="clr-namespace:Hammer.SpinningWheel;assembly=Hammer.SpinningWheel"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"        
         xmlns:view="clr-namespace:Kazetta.View"
-        xmlns:vm="clr-namespace:Kazetta.ViewModel"        
-        mc:Ignorable="d"
+        xmlns:vm="clr-namespace:Kazetta.ViewModel"
+		mc:Ignorable="d"
         Name="MainWindowName" Title="Kazetta" 
         Width="1024" Height="900"         
         Background="Transparent"
@@ -50,7 +50,14 @@
                     <Button Content="Törlés" DockPanel.Dock="Right" Click="Reset" Padding="5"/>
                 </DockPanel>                
                 <Grid Margin="5">
-                    <view:DnDItemsControl Header="Résztvevők" x:Name="PeopleView" ItemsSource="{Binding Students}" dd:DragDrop.DropHandler="{StaticResource DropHandler}">
+                    <view:DnDItemsControl x:Name="PeopleView" ItemsSource="{Binding Students}" dd:DragDrop.DropHandler="{StaticResource DropHandler}">
+						<HeaderedItemsControl.Header>
+							<TextBlock>
+								<Run Text="Résztvevők ("/>
+								<Run Text="{Binding Students.Count, Mode=OneWay}" />				
+								<Run>)</Run>
+							</TextBlock>
+						</HeaderedItemsControl.Header>
                         <dd:DragDrop.DragHandler>
                             <view:AnimatedDragHandler Animation="{StaticResource ButtonRotateBackAnimation}"/>
                         </dd:DragDrop.DragHandler>
@@ -130,8 +137,8 @@
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" LastChildFill="False" Width="Auto">
                     <Button Content="Magic" Padding="5" Click="Magic" DockPanel.Dock="Left" Name="MagicButton" IsEnabled="{Binding MagicEnabled}"/>
-                    <CheckBox IsChecked="{Binding MagicAllowed}" IsEnabled="{Binding MagicPossible}" VerticalAlignment="Center" ToolTip="Magic engedélyezése"/>
-                    <CheckBox IsChecked="{Binding AdvancedGuitarists}" VerticalAlignment="Center" Content="Haladó gitárosok Gyafihoz"/>
+                    <CheckBox IsChecked="{Binding MagicAllowed}" IsEnabled="{Binding MagicPossible}" VerticalAlignment="Center" Content="Enable Magic" Margin="10,0,10,0"/>
+                    <CheckBox IsChecked="{Binding AdvancedGuitarists}" VerticalAlignment="Center" Content="Haladó gitárosok Fannyhoz"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="MagicAnimation" Margin="20,0,0,0" DockPanel.Dock="Left"/>
                     
                     <Button Content="Törlés" Padding="5" Click="ClearSchedule" DockPanel.Dock="Right"/>
@@ -150,8 +157,10 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+						<ColumnDefinition/>
+						<ColumnDefinition/>
+						<ColumnDefinition/>
+					</Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -180,15 +189,19 @@
                     <view:DnDItemsControl Grid.Row="0" Grid.Column="5" ItemsSource="{Binding Schedule[5]}" x:Name="kcs6" Header="{Binding Teachers[5]}" Tag="5"/>
                     <view:DnDItemsControl Grid.Row="0" Grid.Column="6" ItemsSource="{Binding Schedule[6]}" x:Name="kcs7" Header="{Binding Teachers[6]}" Tag="6"/>
                     <view:DnDItemsControl Grid.Row="0" Grid.Column="7" ItemsSource="{Binding Schedule[7]}" x:Name="kcs8" Header="{Binding Teachers[7]}" Tag="7"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Schedule[8]}" x:Name="kcs9" Header="{Binding Teachers[8]}" Tag="8"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Schedule[9]}" x:Name="kcs10" Header="{Binding Teachers[9]}" Tag="9"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Schedule[10]}" x:Name="kcs11" Header="{Binding Teachers[10]}" Tag="10"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Schedule[11]}" x:Name="kcs12" Header="{Binding Teachers[11]}" Tag="11"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Schedule[12]}" x:Name="kcs13" Header="{Binding Teachers[12]}" Tag="12"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}" Tag="13"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}" Tag="14"/>
-                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}" Tag="15"/>
-                    <view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="8" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
+					<view:DnDItemsControl Grid.Row="0" Grid.Column="8" ItemsSource="{Binding Schedule[8]}" x:Name="kcs9" Header="{Binding Teachers[8]}" Tag="8"/>
+					<view:DnDItemsControl Grid.Row="0" Grid.Column="9" ItemsSource="{Binding Schedule[9]}" x:Name="kcs10" Header="{Binding Teachers[9]}" Tag="9"/>
+					<view:DnDItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Schedule[10]}" x:Name="kcs11" Header="{Binding Teachers[10]}" Tag="10"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Schedule[11]}" x:Name="kcs12" Header="{Binding Teachers[11]}" Tag="11"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Schedule[12]}" x:Name="kcs13" Header="{Binding Teachers[12]}" Tag="12"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Schedule[13]}" x:Name="kcs14" Header="{Binding Teachers[13]}" Tag="13"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="4" ItemsSource="{Binding Schedule[14]}" x:Name="kcs15" Header="{Binding Teachers[14]}" Tag="14"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="5" ItemsSource="{Binding Schedule[15]}" x:Name="kcs16" Header="{Binding Teachers[15]}" Tag="15"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="6" ItemsSource="{Binding Schedule[16]}" x:Name="kcs17" Header="{Binding Teachers[16]}" Tag="16"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="7" ItemsSource="{Binding Schedule[17]}" x:Name="kcs18" Header="{Binding Teachers[17]}" Tag="17"/>
+                    <view:DnDItemsControl Grid.Row="1" Grid.Column="8" ItemsSource="{Binding Schedule[18]}" x:Name="kcs19" Header="{Binding Teachers[18]}" Tag="18"/>
+					<view:DnDItemsControl Grid.Row="1" Grid.Column="9" ItemsSource="{Binding Schedule[19]}" x:Name="kcs20" Header="{Binding Teachers[19]}" Tag="19"/>
+					<view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="10" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"
                                           Pinnable="False">

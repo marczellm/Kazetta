@@ -6,283 +6,280 @@ using System;
 
 namespace Kazetta.ViewModel
 {
-    /// <summary>
-    /// Because this is not an enterprise app, I didn't create the plumbing necessary to have separate ViewModels for each tab.
-    /// Instead I dumped all of the application state in the below class.
-    /// </summary>
-    public class MainWindow : ViewModelBase
-    {
-        /// <summary>
-        /// Most tabs disable if this is false
-        /// </summary>
-        public bool PeopleNotEmpty => Students.Any();
+	/// <summary>
+	/// Because this is not an enterprise app, I didn't create the plumbing necessary to have separate ViewModels for each tab.
+	/// Instead I dumped all of the application state in the below class.
+	/// </summary>
+	public class MainWindow : ViewModelBase
+	{
+		/// <summary>
+		/// Most tabs disable if this is false
+		/// </summary>
+		public bool PeopleNotEmpty => Students.Any();
 
-        private bool magicAllowed = true;
-        private bool magicPossible = false;
-        public bool MagicAllowed { get { return magicAllowed; } set { magicAllowed = value; RaisePropertyChanged("MagicEnabled"); } }
-        public bool MagicPossible { get { return magicPossible; } set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
-        public bool MagicEnabled => MagicAllowed && MagicPossible;
+		private bool magicAllowed = true;
+		private bool magicPossible = false;
+		public bool MagicAllowed { get => magicAllowed; set { magicAllowed = value; RaisePropertyChanged("MagicEnabled"); } }
+		public bool MagicPossible { get => magicPossible; set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
+		public bool MagicEnabled => MagicAllowed && MagicPossible;
 
-        public bool AdvancedGuitarists { get; set; }
+		public bool AdvancedGuitarists { get; set; }
 
-        private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            RaisePropertyChanged("PeopleNotEmpty");
-        }
+		private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			RaisePropertyChanged("PeopleNotEmpty");
+			RaisePropertyChanged("Students");
+		}
 
-        private ObservableCollection2<Person> students;
-        public ObservableCollection2<Person> Students
-        {
-            get
-            {
-                if (students == null)
-                {
-                    students = new ObservableCollection2<Person>();
-                    students.CollectionChanged += People_CollectionChanged;
-                }
-                return students;
-            }
-            private set
-            {
-                students = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged("PeopleNotEmpty");
-            }
-        }
+		private ObservableCollection2<Person> students;
+		public ObservableCollection2<Person> Students
+		{
+			get
+			{
+				if (students == null)
+				{
+					students = new ObservableCollection2<Person>();
+					students.CollectionChanged += People_CollectionChanged;
+				}
+				return students;
+			}
+			private set
+			{
+				students = value;
+				RaisePropertyChanged();
+				RaisePropertyChanged("PeopleNotEmpty");
+			}
+		}
 
-        private ObservableCollection2<Person> teachers;
-        public ObservableCollection2<Person> Teachers
-        {
-            get
-            {
-                if (teachers == null)
-                {
-                    teachers = new ObservableCollection2<Person>(new Person[16]);
-                    teachers.CollectionChanged += People_CollectionChanged;
-                }
-                return teachers;
-            }
-            private set
-            {
-                teachers = value;
-                RaisePropertyChanged();
-            }
-        }
-
-
-        private List<ObservableCollection2<Group>> _schedule = new List<ObservableCollection2<Group>>();
-        public List<ObservableCollection2<Group>> Schedule
-        {
-            get { return _schedule; }
-            private set
-            {
-                _schedule = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        private volatile bool scheduleInited = false;
-
-        /// <summary>
-        /// This method is called when the ScheduleTab tab is opened and all conditions have been met.
-        /// </summary>
-        internal void InitSchedule()
-        {
-            if (scheduleInited)
-                return;
-            foreach (var t in Teachers)
-            {
-                var students = Students.Where(p => p.Teacher == t || p.VocalTeacher == t).ToList();
-                Group[] groups = new Group[7];
-                for (int i = 0; i < 7; i++)
-                {
-                    groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
-                    if (groups[i].Persons.Length > 2)
-                        throw new Exception(groups[i].Persons.Length + " ember nem lehet egy csoportban");
-                    groups[i].CreateSubscriptions();
-                }
-                Schedule.Add(new ObservableCollection2<Group>(groups));
-            }
-
-            scheduleInited = true;
-        }
+		private ObservableCollection2<Person> teachers;
+		public ObservableCollection2<Person> Teachers
+		{
+			get
+			{
+				if (teachers == null)
+				{
+					teachers = new ObservableCollection2<Person>(new Person[16]);
+					teachers.CollectionChanged += People_CollectionChanged;
+				}
+				return teachers;
+			}
+			private set
+			{
+				teachers = value;
+				RaisePropertyChanged();
+			}
+		}
 
 
-        internal void InitGroups()
-        {
-            Groups.AddRange(Students.Select(s =>
-            {
-                var g = new Group { Persons = new Person[] { s }, Autogenerated = true };
-                g.CreateSubscriptions();
-                return g;
-            }));
-        }
+		private List<ObservableCollection2<Group>> _schedule = new List<ObservableCollection2<Group>>();
+		public List<ObservableCollection2<Group>> Schedule
+		{
+			get => _schedule;
+			private set
+			{
+				_schedule = value;
+				RaisePropertyChanged();
+			}
+		}
 
-        public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Person>(Students, p => p.Type == PersonType.Student && p.Pair == null
-                                                                                                && (p.Instrument == Instrument.Guitar || p.Instrument == Instrument.Solo));
-        public ICollectionView Unscheduled => CollectionViewHelper.Lazy<Group>(Groups, g => g.Unscheduled);
+		private volatile bool scheduleInited = false;
 
-        private ObservableCollection2<Group> groups;
-        public ObservableCollection2<Group> Groups
-        {
-            get { return groups ?? (groups = new ObservableCollection2<Group>()); }
-            private set { groups = value; RaisePropertyChanged(); }
-        }
+		/// <summary>
+		/// This method is called when the ScheduleTab tab is opened and all conditions have been met.
+		/// </summary>
+		internal void InitSchedule()
+		{
+			if (scheduleInited)
+				return;
+			foreach (var t in Teachers)
+			{
+				var students = Students.Where(p => p.Teacher == t || p.VocalTeacher == t).ToList();
+				Group[] groups = new Group[7];
+				for (int i = 0; i < 7; i++)
+				{
+					groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
+					if (groups[i].Persons.Length > 2)
+						throw new Exception(groups[i].Persons.Length + " ember nem lehet egy csoportban");
+					groups[i].CreateSubscriptions();
+				}
+				Schedule.Add(new ObservableCollection2<Group>(groups));
+			}
 
-        public ICollectionView UserGroups => CollectionViewHelper.Lazy<Group>(Groups, g => !((Group)g).Autogenerated);
+			scheduleInited = true;
+		}
 
-        private Group newGroup;
-        public Group NewGroup
-        {
-            get { return newGroup ?? (newGroup = new Group { Autogenerated = false, Persons = new Person[2] }); }
-            set { newGroup = value; RaisePropertyChanged(); }
-        }
-        
-        public Algorithms Algorithm { get; set; }
-        private string statusText = "";
 
-        public string StatusText
-        {
-            get { return statusText; }
-            set { statusText = value; RaisePropertyChanged(); }
-        }
+		internal void InitGroups()
+		{
+			Groups.AddRange(Students.Select(s =>
+			{
+				var g = new Group { Persons = new Person[] { s }, Autogenerated = true };
+				g.CreateSubscriptions();
+				return g;
+			}));
+		}
 
-        internal AppData AppData
-        {
-            get
-            {
-                return new AppData
-                {
-                    Students = Students.ToArray(),
-                    Teachers = Teachers.ToArray(),
-                    Groups = Groups.ToArray()
-                };
-            }
-            set
-            {
-                Students.AddRange(value.Students);
-                Teachers.QuietClear();                
-                Teachers.AddRange(value.Teachers);
-                Groups.AddRange(value.Groups);
-                // The XML serializer doesn't handle object references, so we replace Person copies with references
-                foreach (Person student in Students)
-                {
-                    if (student.Teacher != null)
-                        student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
-                    if (student.VocalTeacher != null)
-                        student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
-                    for (int i = 0; i < 2; i++)
-                        if (student.PreferredVocalTeachers[i] != null)
-                            student.PreferredVocalTeachers[i] = Teachers.Single(p => p.Name == student.PreferredVocalTeachers[i].Name);
-                }
-                foreach (Group group in Groups)
-                {
-                    for (int i = 0; i < group.Persons.Length; i++)
-                        group.Persons[i] = Students.Single(p => p.Name == group.Persons[i].Name);
-                    if (group.Persons.Length == 2)
-                    {
-                        group.Persons[0].Pair = group.Persons[1];
-                        group.Persons[1].Pair = group.Persons[0];
-                    }
-                    group.CreateSubscriptions();
-                }
-            }
-        }
+		public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Person>(Students, p => p.Type == PersonType.Student && p.Pair == null && p.Instrument == Instrument.Solo);
+		public ICollectionView Unscheduled => CollectionViewHelper.Lazy<Group>(Groups, g => g.Unscheduled);
 
-        public bool CanAssign(Group g, Person teacher)
-        {
-            Person p = g.Persons[0];
-            if (g.Persons.Length == 2)
-                return p.Instrument == teacher.Instrument;
-            else if (p.Pair != null)
-                return p.IsVocalistToo && teacher.IsVocalist;
-            else return p.Instrument == teacher.Instrument || p.IsVocalistToo && teacher.IsVocalist;
-        }
+		private ObservableCollection2<Group> groups;
+		public ObservableCollection2<Group> Groups
+		{
+			get => groups ?? (groups = new ObservableCollection2<Group>());
+			private set { groups = value; RaisePropertyChanged(); }
+		}
 
-        public bool CanAssign(Group g, int teacherIndex, int timeSlot)
-        {
-            return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
-                && ! Schedule[teacherIndex][timeSlot].Persons.Any();
-        }
+		public ICollectionView UserGroups => CollectionViewHelper.Lazy<Group>(Groups, g => !((Group)g).Autogenerated);
 
-        public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot=false)
-        {
-            AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, overrideTimeSlot);
-        }
-        
-        public void AssignTo(Group g, 
-            ObservableCollection2<Group> sourceCollection,
-            ObservableCollection2<Group> targetCollection,
-            Person targetTeacher,            
-            int sourceIndex,
-            int targetIndex,
-            bool overrideTimeslot)
-        {
-            int i = targetIndex;
-            var p = g.Persons[0];
+		private Group newGroup;
+		public Group NewGroup
+		{
+			get => newGroup ?? (newGroup = new Group { Autogenerated = false, Persons = new Person[2] });
+			set { newGroup = value; RaisePropertyChanged(); }
+		}
 
-            if (p.Instrument == targetTeacher.Instrument)
-            {
-                if (p.Teacher != null)
-                    sourceCollection[sourceIndex] = new Group();
-                foreach (var q in g.Persons)
-                {
-                    q.TimeSlot = i;
-                    q.Teacher = targetTeacher;
+		public Algorithms Algorithm { get; set; }
+		private string statusText = "";
 
-                    if (overrideTimeslot && q.VocalTimeSlot == i)
-                    {
-                        int j = Teachers.IndexOf(q.VocalTeacher);
-                        q.VocalTeacher = null;
-                        if (j >= 0)
-                            Schedule[j][i] = new Group();
-                    }
-                }
-            }
-            else if (p.IsVocalistToo && targetTeacher.IsVocalist)
-            {
-                if (p.VocalTeacher != null)
-                    sourceCollection[sourceIndex] = new Group();
-                p.VocalTimeSlot = i;
-                p.VocalTeacher = targetTeacher;
+		public string StatusText
+		{
+			get => statusText;
+			set { statusText = value; RaisePropertyChanged(); }
+		}
 
-                if (overrideTimeslot && p.TimeSlot == i)
-                {
-                    int j = Teachers.IndexOf(p.Teacher);
-                    p.Teacher = null;
-                    if (p.Pair != null)
-                        p.Pair.Teacher = null;
-                    if (j >= 0)
-                        Schedule[j][i] = new Group();
-                }
-            }
-            else return;
+		internal AppData AppData
+		{
+			get => new AppData
+			{
+				Students = Students.ToArray(),
+				Teachers = Teachers.ToArray(),
+				Groups = Groups.ToArray()
+			};
+			set
+			{
+				Students.AddRange(value.Students);
+				Teachers.QuietClear();
+				Teachers.AddRange(value.Teachers);
+				Groups.AddRange(value.Groups);
+				// The XML serializer doesn't handle object references, so we replace Person copies with references
+				foreach (Person student in Students)
+				{
+					if (student.Teacher != null)
+						student.Teacher = Teachers.Single(p => p.Name == student.Teacher.Name);
+					if (student.VocalTeacher != null)
+						student.VocalTeacher = Teachers.Single(p => p.Name == student.VocalTeacher.Name);
+					for (int i = 0; i < 2; i++)
+						if (student.PreferredVocalTeachers[i] != null)
+							student.PreferredVocalTeachers[i] = Teachers.Single(p => p.Name == student.PreferredVocalTeachers[i].Name);
+				}
+				foreach (Group group in Groups)
+				{
+					for (int i = 0; i < group.Persons.Length; i++)
+						group.Persons[i] = Students.Single(p => p.Name == group.Persons[i].Name);
+					if (group.Persons.Length == 2)
+					{
+						group.Persons[0].Pair = group.Persons[1];
+						group.Persons[1].Pair = group.Persons[0];
+					}
+					group.CreateSubscriptions();
+				}
+			}
+		}
 
-            targetCollection[targetIndex % targetCollection.Count] = g;
-        }
+		public bool CanAssign(Group g, Person teacher)
+		{
+			Person p = g.Persons[0];
+			if (g.Persons.Length == 2)
+				return p.Instrument == teacher.Instrument;
+			else if (p.Pair != null)
+				return p.IsVocalistToo && teacher.IsVocalist;
+			else return p.Instrument == teacher.Instrument || p.IsVocalistToo && teacher.IsVocalist;
+		}
 
-        public void ClearSchedule()
-        {
-            foreach (Person p in Students)
-            {
-                p.Teacher = p.VocalTeacher = null;
-                p.TimeSlot = p.VocalTimeSlot = -1;
-            }
-            foreach (var coll in Schedule)
-            {
-                coll.Clear();
-                coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));                
-            }
-        }
+		public bool CanAssign(Group g, int teacherIndex, int timeSlot)
+		{
+			return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
+				&& !Schedule[teacherIndex][timeSlot].Persons.Any();
+		}
 
-        public void AddGroup(Group group)
-        {
-            var p = group.Persons;
-            Groups.RemoveAll(g => g.Autogenerated && g.Persons.Length == 1 && !g.Persons[0].IsVocalistToo && p.Contains(g.Persons[0]));
-            group.CreateSubscriptions();
-            Groups.Add(group);
-            p[0].Pair = p[1];
-            p[1].Pair = p[0];
-        }
-    }
+		public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot = false)
+		{
+			AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, overrideTimeSlot);
+		}
+
+		public void AssignTo(Group g,
+			ObservableCollection2<Group> sourceCollection,
+			ObservableCollection2<Group> targetCollection,
+			Person targetTeacher,
+			int sourceIndex,
+			int targetIndex,
+			bool overrideTimeslot)
+		{
+			int i = targetIndex;
+			var p = g.Persons[0];
+
+			if (p.Instrument == targetTeacher.Instrument)
+			{
+				if (p.Teacher != null)
+					sourceCollection[sourceIndex] = new Group();
+				foreach (var q in g.Persons)
+				{
+					q.TimeSlot = i;
+					q.Teacher = targetTeacher;
+
+					if (overrideTimeslot && q.VocalTimeSlot == i)
+					{
+						int j = Teachers.IndexOf(q.VocalTeacher);
+						q.VocalTeacher = null;
+						if (j >= 0)
+							Schedule[j][i] = new Group();
+					}
+				}
+			}
+			else if (p.IsVocalistToo && targetTeacher.IsVocalist)
+			{
+				if (p.VocalTeacher != null)
+					sourceCollection[sourceIndex] = new Group();
+				p.VocalTimeSlot = i;
+				p.VocalTeacher = targetTeacher;
+
+				if (overrideTimeslot && p.TimeSlot == i)
+				{
+					int j = Teachers.IndexOf(p.Teacher);
+					p.Teacher = null;
+					if (p.Pair != null)
+						p.Pair.Teacher = null;
+					if (j >= 0)
+						Schedule[j][i] = new Group();
+				}
+			}
+			else return;
+
+			targetCollection[targetIndex % targetCollection.Count] = g;
+		}
+
+		public void ClearSchedule()
+		{
+			foreach (Person p in Students)
+			{
+				p.Teacher = p.VocalTeacher = null;
+				p.TimeSlot = p.VocalTimeSlot = -1;
+			}
+			foreach (var coll in Schedule)
+			{
+				coll.Clear();
+				coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));
+			}
+		}
+
+		public void AddGroup(Group group)
+		{
+			var p = group.Persons;
+			Groups.RemoveAll(g => g.Autogenerated && g.Persons.Length == 1 && !g.Persons[0].IsVocalistToo && p.Contains(g.Persons[0]));
+			group.CreateSubscriptions();
+			Groups.Add(group);
+			p[0].Pair = p[1];
+			p[1].Pair = p[0];
+		}
+	}
 }
