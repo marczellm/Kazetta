@@ -8,8 +8,8 @@ namespace Kazetta.ViewModel
     [Serializable]
     public class AppData
     {
-        public Person[] Students;
-        public Person[] Teachers;
+        public Student[] Students;
+        public Teacher[] Teachers;
         public Group[] Groups;
     }
 }

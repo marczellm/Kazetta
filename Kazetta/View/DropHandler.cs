@@ -20,7 +20,7 @@ namespace Kazetta.View
             dropInfo.Effects = DragDropEffects.None;
             dropInfo.DropTargetAdorner = null;
 
-            if (dropInfo.Data is Person p)
+            if (dropInfo.Data is Person person)
             {
                 if (source.Name == "PeopleView" && (target.Name == "PeopleView" || target.Name == "AddOrRemovePersonButton"))
                     dropInfo.Effects = DragDropEffects.Move;
@@ -29,16 +29,16 @@ namespace Kazetta.View
             {
                 if (target.Name.StartsWith("kcs"))
                 {
-                    var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
-                    p = g.Persons[0];
+                    var targetTeacher = (Teacher)((HeaderedItemsControl)target).Header;
+                    Student p = g.Persons[0];
                     if (source != target && (p.Teacher == targetTeacher || p.VocalTeacher == targetTeacher))
                         return;
                     if (dropInfo.InsertIndex >= ((IEnumerable<Group>)dropInfo.TargetCollection).Count())
                         return;
                     if (source.Name.StartsWith("kcs"))
                     {
-                        var sourceTeacher = (Person)((HeaderedItemsControl)source).Header;
-                        if (sourceTeacher.Instrument == targetTeacher.Instrument)
+                        var sourceTeacher = (Teacher)((HeaderedItemsControl)source).Header;
+                        if (targetTeacher.Instruments.Contains(p.Instrument))
                         {
                             dropInfo.Effects = DragDropEffects.Move;
                             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
@@ -65,7 +65,7 @@ namespace Kazetta.View
             ObservableCollection2<Group> sourceCollection() => (ObservableCollection2<Group>)dropInfo.DragInfo.SourceCollection;
 
             if (target.Name == "AddOrRemovePersonButton") {
-                var p = (Person)dropInfo.Data;
+                var p = (Student)dropInfo.Data;
                 D.Students.Remove(p);
                 D.Groups.RemoveAll(e => e.Persons.Contains(p));
             }
@@ -73,7 +73,7 @@ namespace Kazetta.View
             {
                 var targetCollection = (ObservableCollection2<Group>)dropInfo.TargetCollection;
                 int i = dropInfo.InsertIndex;
-                var targetTeacher = (Person)((HeaderedItemsControl)target).Header;
+                var targetTeacher = (Teacher)((HeaderedItemsControl)target).Header;
                 foreach (var p in targetCollection[i].Persons)
                 {
                     if (p.Teacher == targetTeacher)
@@ -99,9 +99,9 @@ namespace Kazetta.View
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")
             {
                 var g = (Group)dropInfo.Data;
-                var sourceTeacher = (Person)((HeaderedItemsControl)source).Header;
+                var sourceTeacher = (Teacher)((HeaderedItemsControl)source).Header;
 
-                foreach (Person p in g.Persons)
+                foreach (Student p in g.Persons)
                 {
                     if (p.Teacher == sourceTeacher)
                         p.Teacher = null;

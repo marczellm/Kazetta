@@ -75,14 +75,13 @@ namespace Kazetta
 					else if (instrument.Contains("keverés"))
 						continue;
 
-					var person = new Person
+					var person = new Student
 					{
 						Name = col[COL_NAME].Value.Trim(),
 						Sex = SexMapping[col[COL_SEX].Value],
 						SkillLevel = LevelMapping[col[COL_LEVEL].Value],
 						IsVocalistToo = col[COL_VOCALISTTOO].Value == "Igen",
-						BirthYear = col[COL_BIRTHDATE].Value.Year,
-						Type = PersonType.Student
+						BirthYear = col[COL_BIRTHDATE].Value.Year
 					};
 
 					person.Instrument = InstrumentMapping(instrument);
@@ -101,11 +100,12 @@ namespace Kazetta
 					var instrument = col[2].Value;
 					if (instrument == null)
 						break;
-					ppl.Add(new Person
+					var secondaryInstrument = col[3].Value;
+					var instruments = secondaryInstrument == null ? new Instrument[] { InstrumentMapping(instrument) } : new Instrument[] { InstrumentMapping(instrument), InstrumentMapping(secondaryInstrument) };
+					ppl.Add(new Teacher
 					{
 						Name = col[1].Value.Trim(),
-						Instrument = InstrumentMapping(col[2].Value),
-						Type = PersonType.Teacher
+						Instruments = instruments
 					});
 				}
 
@@ -117,9 +117,8 @@ namespace Kazetta
 					string name = col[1].Value;
 					if (name == null)
 						continue;
-					Person p = ppl.Find(q => q.Name == name.Trim());
-					p.PreferredVocalTeachers[0] = ppl.Single(q => q.Name == col[2].Value);
-					//p.PreferredVocalTeachers[1] = ppl.Single(q => q.Name == col[4].Value);
+					Student p = ppl.OfType<Student>().First(q => q.Name == name.Trim());
+					p.PreferredVocalTeachers[0] = ppl.OfType<Teacher>().Single(q => q.Name == col[2].Value);
 				}
 
 				return ppl;
@@ -150,7 +149,7 @@ namespace Kazetta
 				foreach (Person p in data.Students)
 				{
 					c[i, 1].Activate();
-					string[] nev = p.Name.Split(new Char[] { ' ' }, 2);
+					string[] nev = p.Name.Split(new char[] { ' ' }, 2);
 					c[i, 1] = nev[0];
 					c[i, 2] = nev[1];
 					i++;

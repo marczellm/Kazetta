@@ -65,7 +65,7 @@ namespace Kazetta
 
                 // Put advanced guitarists first.
                 bool isAdvancedGuitarist(Group g) {
-                    Person p = g.Persons[0];
+                    Student p = g.Persons[0];
                     return p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced;
                 };
 
@@ -87,7 +87,7 @@ namespace Kazetta
 
                 foreach (Group g in Beosztando)
                 {
-                    Person p = g.Persons[0];
+                    Student p = g.Persons[0];
 
                     if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
                     {
@@ -116,7 +116,7 @@ namespace Kazetta
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
-                                      where d.Teachers[i].Instrument == p.Instrument && d.CanAssign(g, i, j)
+                                      where d.Teachers[i].Instruments.Contains(p.Instrument) && d.CanAssign(g, i, j)
                                       select (i, j);
 
                         if (p.Instrument == Instrument.Voice)
