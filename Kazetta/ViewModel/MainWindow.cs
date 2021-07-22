@@ -189,6 +189,8 @@ namespace Kazetta.ViewModel
 		public bool CanAssign(Group g, Teacher teacher)
 		{
 			Student p = g.Persons[0];
+			if (teacher.Name == "Vadász Gellért")
+				return false; // his schedule will be derived from Ági's
 			if (g.Persons.Length == 2)
 				return teacher.Instruments.Contains(p.Instrument);
 			else if (p.Pair != null)
@@ -198,8 +200,20 @@ namespace Kazetta.ViewModel
 
 		public bool CanAssign(Group g, int teacherIndex, int timeSlot)
 		{
-			return CanAssign(g, Teachers[teacherIndex]) && !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
+			var ret = CanAssign(g, Teachers[teacherIndex]) 
+				&& !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
 				&& !Schedule[teacherIndex][timeSlot].Persons.Any();
+
+			if (Teachers[teacherIndex].IsVocalist && g.Persons.Any(p => p.Instrument == Instrument.Solo))
+			{// we are trying to assign a soloist to their vocal teacher: check that the proposed timeslot does not conflict with their improv lesson
+				ret = ret && !g.Persons.Any(p => timeSlot == (p.TimeSlot + 1) % 7);
+			}
+			else if (Teachers[teacherIndex].Instruments.Contains(Instrument.Solo))
+			{// we are trying to assign a group to the solfeggio teacher at timeSlot; check that the next timeslot is also free for both of them
+				ret = ret && !g.Persons.Any(p => p.TimeSlot == (timeSlot + 1) % 7 || p.VocalTimeSlot == (timeSlot + 1) % 7);
+			}
+
+			return ret;
 		}
 
 		public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot = false)

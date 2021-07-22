@@ -38,7 +38,7 @@ namespace Kazetta.View
                     if (source.Name.StartsWith("kcs"))
                     {
                         var sourceTeacher = (Teacher)((HeaderedItemsControl)source).Header;
-                        if (targetTeacher.Instruments.Contains(p.Instrument))
+                        if (targetTeacher.Instruments.Contains(p.Instrument) || (targetTeacher.IsVocalist && p.IsVocalistToo))
                         {
                             dropInfo.Effects = DragDropEffects.Move;
                             dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Data;
@@ -8,9 +9,9 @@ namespace Kazetta
 {
     public class Algorithms
     {
-        private ViewModel.MainWindow d;
+        private readonly ViewModel.MainWindow d;
         private readonly List<Group> Beosztando;
-        private static Random rng = new Random();
+        private static readonly Random rng = new Random();
         private readonly object _lock;
         public Algorithms(ViewModel.MainWindow data, object _lock)
         {
@@ -120,7 +121,7 @@ namespace Kazetta
                                       select (i, j);
 
                         if (p.Instrument == Instrument.Voice)
-                            options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));
+                            options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));                      
 
                         if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
                             options = options.Where(tup => d.Teachers[tup.i].Name == "Gyarmati Fanny");
@@ -144,7 +145,23 @@ namespace Kazetta
                     }                    
                 }
             }
+            if (kesz)
+			{
+                ExtraPostprocess();
+			}
             return kesz;
+        }
+
+        private void ExtraPostprocess()
+		{
+            var solfeggioTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Name == "Bartal Ági"));
+            var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Name == "Vadász Gellért"));
+            foreach (Group g in d.Schedule[solfeggioTeacherIndex])
+			{
+                var nextTimeSlot = (g.Persons[0].TimeSlot + 1) % 7;
+                Debug.Assert(!g.Persons.Any(p => p.VocalTimeSlot == nextTimeSlot));
+                d.Schedule[improvTeacherIndex][(g.Persons[0].TimeSlot + 1) % 7] = g;
+			}
         }
     }
 }
