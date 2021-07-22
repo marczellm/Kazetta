@@ -129,6 +129,9 @@ namespace Kazetta
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
                             options = options.Where(tup => tup.j > 1);
 
+                        if (g.Persons[0].Name == "Hernády Balázs")
+                            options = options.Where(tup => d.Teachers[tup.i].Name == "Fodor Tamás");
+
                         if (options.Any())
                         {
                             var (i, j) = options.First();
