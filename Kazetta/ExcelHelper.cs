@@ -97,15 +97,16 @@ namespace Kazetta
 				foreach (Range row in sheet.UsedRange.Rows)
 				{
 					Range col = row.Columns;
-					var instrument = col[2].Value;
+					var instrument = col[3].Value;
 					if (instrument == null)
 						break;
-					var secondaryInstrument = col[3].Value;
+					var secondaryInstrument = col[4].Value;
 					var instruments = secondaryInstrument == null ? new Instrument[] { InstrumentMapping(instrument) } : new Instrument[] { InstrumentMapping(instrument), InstrumentMapping(secondaryInstrument) };
 					ppl.Add(new Teacher
 					{
 						Name = col[1].Value.Trim(),
-						Instruments = instruments
+                        Sex = SexMapping[col[2].Value],
+                        Instruments = instruments
 					});
 				}
 

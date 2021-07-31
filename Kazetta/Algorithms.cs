@@ -40,12 +40,17 @@ namespace Kazetta
             return list;
         }
 
-        private int SpecialIndexOf<T>(T[] arr, T item)
+        private static int SpecialIndexOf<T>(T[] arr, T item)
         {
             var ret = Array.IndexOf(arr, item);
             if (ret == -1)
                 ret = arr.Length;
             return ret;
+        }
+
+        private static int SexBasedTeacherPreference(Person student, Person teacher)
+        {
+            return student.Sex == teacher.Sex ? 0 : 1;
         }
 
         /// <summary>
@@ -96,6 +101,7 @@ namespace Kazetta
                                       from j in Enumerable.Range(0, 7)
                                       where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
                                       orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
+                                      orderby SexBasedTeacherPreference(p, d.Teachers[i])
                                       select (i, j);
 
                         if (options.Any())
@@ -121,7 +127,7 @@ namespace Kazetta
                                       select (i, j);
 
                         if (p.Instrument == Instrument.Voice)
-                            options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i]));                      
+                            options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i])).OrderBy(tup => SexBasedTeacherPreference(p, d.Teachers[tup.i]));
 
                         if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
                             options = options.Where(tup => d.Teachers[tup.i].Name == "Gyarmati Fanny");
@@ -161,9 +167,12 @@ namespace Kazetta
             var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Name == "Vadász Gellért"));
             foreach (Group g in d.Schedule[solfeggioTeacherIndex])
 			{
-                var nextTimeSlot = (g.Persons[0].TimeSlot + 1) % 7;
-                Debug.Assert(!g.Persons.Any(p => p.VocalTimeSlot == nextTimeSlot));
-                d.Schedule[improvTeacherIndex][(g.Persons[0].TimeSlot + 1) % 7] = g;
+                if (g.Persons.Any())
+                {
+                    var nextTimeSlot = (g.Persons[0].TimeSlot + 1) % 7;
+                    Debug.Assert(!g.Persons.Any(p => p.VocalTimeSlot == nextTimeSlot));
+                    d.Schedule[improvTeacherIndex][(g.Persons[0].TimeSlot + 1) % 7] = g;
+                }
 			}
         }
     }
