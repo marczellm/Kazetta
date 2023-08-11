@@ -29,12 +29,12 @@ namespace Kazetta
 			throw new Exception(providedAnswer);
 		}
 
-		private static readonly uint COL_NAME = 3;
-		private static readonly uint COL_SEX = 4;
-		private static readonly uint COL_BIRTHDATE = 6;
-		private static readonly uint COL_INSTRUMENT = 18;
-		private static readonly uint COL_LEVEL = 19;
-		private static readonly uint COL_VOCALISTTOO = 20;
+		private static readonly uint COL_NAME = 5;
+		private static readonly uint COL_SEX = 10;
+		private static readonly uint COL_BIRTHDATE = 11;
+		private static readonly uint COL_INSTRUMENT = 6;
+		private static readonly uint COL_LEVEL = 7;
+		private static readonly uint COL_VOCALISTTOO = 8;
 
 		/// <summary>
 		/// Opens Excel in the background and reads available data about participants.
@@ -46,7 +46,7 @@ namespace Kazetta
 		public static List<Person> LoadXLS(string filename)
 		{
 			var excel = new Microsoft.Office.Interop.Excel.Application();
-			Workbook file = excel.Workbooks.Open(filename);
+			Workbook file = excel.Workbooks.Open(filename, ReadOnly: true);
 			var SexMapping = new Dictionary<string, Sex>
 			{
 				{ "Nő", Sex.Female },
@@ -119,7 +119,9 @@ namespace Kazetta
 					if (name == null)
 						continue;
 					Student p = ppl.OfType<Student>().First(q => q.Name == name.Trim());
-					p.PreferredVocalTeachers[0] = ppl.OfType<Teacher>().Single(q => q.Name == col[2].Value);
+					string tanar = col[2].Value;
+					var tanarok = ppl.OfType<Teacher>().ToList();
+                    p.PreferredVocalTeachers[0] = ppl.OfType<Teacher>().Single(q => q.Name == col[2].Value);
 				}
 
 				return ppl;

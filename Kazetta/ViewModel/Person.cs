@@ -87,12 +87,13 @@ namespace Kazetta
 			set { vocalTeacher = value; RaisePropertyChanged(); }
 		}
 
-		private Student _pair;
+		// if they are paired with other students for solo instrument lesson
+		private Group _group;
 		[XmlIgnore]
-		public Student Pair
+		public Group Group
 		{
-			get => _pair;
-			set { _pair = value; RaisePropertyChanged(); }
+			get => _group;
+			set { _group = value; RaisePropertyChanged(); }
 		}
 
 		public Teacher[] PreferredVocalTeachers = new Teacher[2];

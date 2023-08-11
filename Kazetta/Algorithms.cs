@@ -117,7 +117,7 @@ namespace Kazetta
                         }
                     }
 
-                    if (g.Persons.Length > 1 || p.Pair == null) // we have to assign to an instrument teacher
+                    if (g.Persons.Length > 1 || p.Group == null) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
@@ -132,9 +132,6 @@ namespace Kazetta
 
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
                             options = options.Where(tup => tup.j > 1);
-
-                        if (g.Persons[0].Name == "Hernády Balázs")
-                            options = options.Where(tup => d.Teachers[tup.i].Name == "Fodor Tamás");
 
                         if (options.Any())
                         {
