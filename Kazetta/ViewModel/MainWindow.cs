@@ -98,7 +98,7 @@ namespace Kazetta.ViewModel
 				for (int i = 0; i < 7; i++)
 				{
 					groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
-					if (groups[i].Persons.Length > 2)
+					if (groups[i].Persons.Length > 3)
 						throw new Exception(groups[i].Persons.Length + " ember nem lehet egy csoportban");
 					groups[i].CreateSubscriptions();
 				}
@@ -190,7 +190,7 @@ namespace Kazetta.ViewModel
 			Student p = g.Persons[0];
 			if (teacher.Name == "Vadász Gellért")
 				return false; // his schedule will be derived from Ági's
-			if (g.Persons.Length == 2)
+			if (g.Persons.Length > 1)
 				return teacher.Instruments.Contains(p.Instrument);
 			else if (p.Group != null)
 				return p.IsVocalistToo && teacher.IsVocalist;

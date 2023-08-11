@@ -80,7 +80,7 @@ namespace Kazetta
                         Name = col[COL_NAME].Value.Trim(),
                         Sex = SexMapping[col[COL_SEX].Value],
                         SkillLevel = LevelMapping[col[COL_LEVEL].Value],
-                        IsVocalistToo = col[COL_VOCALISTTOO].Value == "Igen",
+                        IsVocalistToo = !string.IsNullOrWhiteSpace(col[COL_VOCALISTTOO].Value),
                         BirthYear = col[COL_BIRTHDATE].Value.Year,
                         Instrument = InstrumentMapping(instrument)
                     };

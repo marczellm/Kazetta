@@ -117,7 +117,7 @@ namespace Kazetta
                         }
                     }
 
-                    if (g.Persons.Length > 1 || p.Group == null) // we have to assign to an instrument teacher
+                    if (p.Instrument != Instrument.Solo || g.Persons.Length > 1) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
