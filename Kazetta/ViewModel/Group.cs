@@ -1,6 +1,7 @@
 ﻿using Kazetta.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kazetta
 {
@@ -16,7 +17,21 @@ namespace Kazetta
         public bool Unscheduled => (Persons.Length == 1 && (Persons[0].Teacher == null || (Persons[0].IsVocalistToo && Persons[0].VocalTeacher == null)))
             || (Persons.Length > 1 && (Persons[0].Teacher == null));
 
-        public override string ToString() => String.Join<Person>(", ", Persons);
+        public override string ToString()
+        {
+            if (Persons.Length == 1)
+            {
+                return Persons[0].ToString();
+            } 
+            else
+            {
+                return string.Join(", ", Persons.Select(p =>
+                {
+                    string[] names = p.Name.Split(new char[] { ' ' }, 2);
+                    return names[0][0] + ". " + names[1];
+                }));
+            }
+        }
 
         private static readonly List<string> propertyNames = new List<string> { "Teacher", "VocalTeacher"};
 

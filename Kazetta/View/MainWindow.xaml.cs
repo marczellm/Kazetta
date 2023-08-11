@@ -254,7 +254,7 @@ namespace Kazetta
 				{
 					viewModel.StatusText = message;
 					viewModel.MagicPossible = false;
-					SaveButton.IsEnabled = false;
+					// SaveButton.IsEnabled = false;
 					// we don't activate newTab here anymore, because it caused weird behaviour
 				}
 				else if (newTab == ScheduleTab)
