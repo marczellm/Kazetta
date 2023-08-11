@@ -10,6 +10,17 @@ namespace Kazetta.View
     class DropHandler : FrameworkElement, IDropTarget
     {
         private ViewModel.MainWindow D => (ViewModel.MainWindow)DataContext;
+
+        void IDropTarget.DragEnter(IDropInfo dropInfo)
+        {
+            
+        }
+
+        void IDropTarget.DragLeave(IDropInfo dropInfo)
+        {
+            
+        }
+
         /// <summary>
         /// Set where drops are allowed
         /// </summary>
@@ -20,7 +31,7 @@ namespace Kazetta.View
             dropInfo.Effects = DragDropEffects.None;
             dropInfo.DropTargetAdorner = null;
 
-            if (dropInfo.Data is Person person)
+            if (dropInfo.Data is Person)
             {
                 if (source.Name == "PeopleView" && (target.Name == "PeopleView" || target.Name == "AddOrRemovePersonButton"))
                     dropInfo.Effects = DragDropEffects.Move;
@@ -37,7 +48,6 @@ namespace Kazetta.View
                         return;
                     if (source.Name.StartsWith("kcs"))
                     {
-                        var sourceTeacher = (Teacher)((HeaderedItemsControl)source).Header;
                         if (targetTeacher.Instruments.Contains(p.Instrument) || (targetTeacher.IsVocalist && p.IsVocalistToo))
                         {
                             dropInfo.Effects = DragDropEffects.Move;

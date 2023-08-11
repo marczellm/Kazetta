@@ -12,15 +12,15 @@ namespace Kazetta.View
     /// </summary>
     class KiscsoportColorConverter : IMultiValueConverter
     {
-        private static byte[,] colors = new byte[,] { { 125, 135, 185 }, { 190, 193, 212 }, { 214, 188, 192 }, { 187, 119, 132 },
+        private static readonly byte[,] colors = new byte[,] { { 125, 135, 185 }, { 190, 193, 212 }, { 214, 188, 192 }, { 187, 119, 132 },
              { 133, 149, 225 }, { 181, 187, 227 }, { 230, 175, 185 }, { 224, 123, 145 },
               { 141, 213, 147 }, { 198, 222, 199 }, { 234, 211, 198 }, { 240, 185, 141 },
              { 15, 207, 192 }, { 156, 222, 214 }, { 213, 234, 231 }, { 243, 225, 235 }, { 246, 196, 225 } };
         
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            Person p = (Person)values[0];
-            var viewModel = (ViewModel.MainWindow)values[1];
+            //Person p = (Person)values[0];
+            //var viewModel = (ViewModel.MainWindow)values[1];
             //int i = p.Band;
             //if (i != -1 && viewModel.Bands[i].Cast<Person>().Any(q => p != q && p.Band == q.Band))
             //    return new SolidColorBrush(Color.FromArgb(127, colors[i, 0], colors[i, 1], colors[i, 2]));

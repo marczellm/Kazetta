@@ -18,7 +18,7 @@ namespace Kazetta
 
         public override string ToString() => String.Join<Person>(", ", Persons);
 
-        private static List<string> propertyNames = new List<string> { "Teacher", "VocalTeacher"};
+        private static readonly List<string> propertyNames = new List<string> { "Teacher", "VocalTeacher"};
 
         public void CreateSubscriptions()
         {

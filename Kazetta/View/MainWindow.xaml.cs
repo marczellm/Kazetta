@@ -28,10 +28,10 @@ namespace Kazetta
 				Directory.CreateDirectory(folder);
 			filepath = Path.Combine(folder, "state.xml");
 		}
-		private DnDItemsControl[] kcs;
-		private string filepath;
+		private readonly DnDItemsControl[] kcs;
+		private readonly string filepath;
 		private CancellationTokenSource cts;
-		private object _lock = new object();
+		private readonly object _lock = new object();
 
 		private ViewModel.MainWindow viewModel => (ViewModel.MainWindow)DataContext;
 
@@ -175,9 +175,12 @@ namespace Kazetta
 			var cp = (FrameworkElement)PeopleView.ItemContainerGenerator.ContainerFromItem(p);
 			cp.ApplyTemplate();
 			var label = (ContentControl)PeopleView.ItemTemplate.FindName("PersonButton", cp);
-			TextBox textBox = new TextBox { MinWidth = 10 };
-			textBox.Tag = p;
-			textBox.KeyDown += TextBox_KeyDown;
+            TextBox textBox = new TextBox
+            {
+                MinWidth = 10,
+                Tag = p
+            };
+            textBox.KeyDown += TextBox_KeyDown;
 			label.Content = textBox;
 			Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, (Action)(() => Keyboard.Focus(textBox)));
 		}

@@ -75,17 +75,17 @@ namespace Kazetta
 					else if (instrument.Contains("keverés"))
 						continue;
 
-					var person = new Student
-					{
-						Name = col[COL_NAME].Value.Trim(),
-						Sex = SexMapping[col[COL_SEX].Value],
-						SkillLevel = LevelMapping[col[COL_LEVEL].Value],
-						IsVocalistToo = col[COL_VOCALISTTOO].Value == "Igen",
-						BirthYear = col[COL_BIRTHDATE].Value.Year
-					};
+                    var person = new Student
+                    {
+                        Name = col[COL_NAME].Value.Trim(),
+                        Sex = SexMapping[col[COL_SEX].Value],
+                        SkillLevel = LevelMapping[col[COL_LEVEL].Value],
+                        IsVocalistToo = col[COL_VOCALISTTOO].Value == "Igen",
+                        BirthYear = col[COL_BIRTHDATE].Value.Year,
+                        Instrument = InstrumentMapping(instrument)
+                    };
 
-					person.Instrument = InstrumentMapping(instrument);
-					if (person.Instrument == Instrument.Voice)
+                    if (person.Instrument == Instrument.Voice)
 					{
 						person.IsVocalistToo = false;
 					}

@@ -10,8 +10,7 @@ namespace Kazetta.View
         {
             if (value is string)
             {
-                int number;
-                if (!Int32.TryParse((value as string), out number))
+                if (!Int32.TryParse((value as string), out _))
                     return new ValidationResult(false, "");
             }
 
