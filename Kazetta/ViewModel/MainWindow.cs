@@ -119,7 +119,7 @@ namespace Kazetta.ViewModel
 			}));
 		}
 
-		public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Student>(Students, p => p.Group == null && p.Instrument == Instrument.Solo);
+		public ICollectionView GroupEligible => CollectionViewHelper.Lazy<Student>(Students, p => p.Group == null && p.Instrument == Instrument.Solfeggio);
 		public ICollectionView Unscheduled => CollectionViewHelper.Lazy<Group>(Groups, g => g.Unscheduled);
 
 		private ObservableCollection2<Group> groups;
@@ -177,7 +177,10 @@ namespace Kazetta.ViewModel
 					for (int i = 0; i < group.Persons.Length; i++)
 					{
 						group.Persons[i] = Students.Single(p => p.Name == group.Persons[i].Name);
-						group.Persons[i].Group = group;
+						if (group.Persons.Length > 1)
+						{
+							group.Persons[i].Group = group;
+						}
                     }
 					
 					group.CreateSubscriptions();
@@ -188,8 +191,8 @@ namespace Kazetta.ViewModel
 		public bool CanAssign(Group g, Teacher teacher)
 		{
 			Student p = g.Persons[0];
-			if (teacher.Name == "Vadász Gellért")
-				return false; // his schedule will be derived from Ági's
+			if (teacher.Instruments.First() == Instrument.Improv)
+				return false; // his schedule will be derived from the solfeggio teacher's
 			if (g.Persons.Length > 1)
 				return teacher.Instruments.Contains(p.Instrument);
 			else if (p.Group != null)
@@ -203,11 +206,11 @@ namespace Kazetta.ViewModel
 				&& !g.Persons.Any(p => p.TimeSlot == timeSlot || p.VocalTimeSlot == timeSlot)
 				&& !Schedule[teacherIndex][timeSlot].Persons.Any();
 
-			if (Teachers[teacherIndex].IsVocalist && g.Persons.Any(p => p.Instrument == Instrument.Solo))
+			if (Teachers[teacherIndex].IsVocalist && g.Persons.Any(p => p.Instrument == Instrument.Solfeggio))
 			{// we are trying to assign a soloist to their vocal teacher: check that the proposed timeslot does not conflict with their improv lesson
 				ret = ret && !g.Persons.Any(p => timeSlot == (p.TimeSlot + 1) % 7);
 			}
-			else if (Teachers[teacherIndex].Instruments.Contains(Instrument.Solo))
+			else if (Teachers[teacherIndex].Instruments.Contains(Instrument.Solfeggio))
 			{// we are trying to assign a group to the solfeggio teacher at timeSlot; check that the next timeslot is also free for both of them
 				ret = ret && !g.Persons.Any(p => p.TimeSlot == (timeSlot + 1) % 7 || p.VocalTimeSlot == (timeSlot + 1) % 7);
 			}

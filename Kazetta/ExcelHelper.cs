@@ -10,6 +10,9 @@ namespace Kazetta
 	{
 		private static Instrument InstrumentMapping(string providedAnswer)
 		{
+			// No student will be assigned Improv, they will be assigned Solfeggio
+			// so that the improv teacher gets no direct assignments and their schedule can be directly
+			// derived from the solfeggio teacher's
 			providedAnswer = providedAnswer.ToLower();
 			var mapping = new List<KeyValuePair<string, Instrument>>
 			{// Order is important
@@ -18,9 +21,9 @@ namespace Kazetta
 				new KeyValuePair<string, Instrument> ("ének", Instrument.Voice),
 				new KeyValuePair<string, Instrument> ("ukulele", Instrument.Voice), // we have no ukulele teacher
                 new KeyValuePair<string, Instrument> ("zongora", Instrument.Keyboards),
-				new KeyValuePair<string, Instrument> ("dallamhangszer", Instrument.Solo),
-				new KeyValuePair<string, Instrument> ("improvizáció", Instrument.Solo),
-				new KeyValuePair<string, Instrument> ("szolfézs", Instrument.Solo),
+				new KeyValuePair<string, Instrument> ("dallamhangszer", Instrument.Solfeggio),
+				new KeyValuePair<string, Instrument> ("improvizáció", Instrument.Solfeggio),
+				new KeyValuePair<string, Instrument> ("szolfézs", Instrument.Solfeggio),
 				new KeyValuePair<string, Instrument> ("ütőhangszer", Instrument.Percussion)
 			};
 			foreach (var pair in mapping)
@@ -97,11 +100,20 @@ namespace Kazetta
 				foreach (Range row in sheet.UsedRange.Rows)
 				{
 					Range col = row.Columns;
-					var instrument = col[3].Value;
-					if (instrument == null)
+					var strInstrument = col[3].Value;
+					if (strInstrument == null)
 						break;
+					Instrument primaryInstrument;
+					if (strInstrument == "improvizáció")
+					{
+						primaryInstrument = Instrument.Improv;
+					}
+					else
+					{
+						primaryInstrument = InstrumentMapping(strInstrument);
+                    }
 					var secondaryInstrument = col[4].Value;
-					var instruments = secondaryInstrument == null ? new Instrument[] { InstrumentMapping(instrument) } : new Instrument[] { InstrumentMapping(instrument), InstrumentMapping(secondaryInstrument) };
+					var instruments = secondaryInstrument == null ? new Instrument[] { primaryInstrument } : new Instrument[] { primaryInstrument, InstrumentMapping(secondaryInstrument) };
 					ppl.Add(new Teacher
 					{
 						Name = col[1].Value.Trim(),

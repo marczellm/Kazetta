@@ -117,7 +117,9 @@ namespace Kazetta
                         }
                     }
 
-                    if (p.Instrument != Instrument.Solo || g.Persons.Length > 1) // we have to assign to an instrument teacher
+                    // Do not assign to instrument teacher, if this is a single person group where the person has a longer group.
+                    // That would mean the single person group is here just for the one on one vocal lesson while
+                    if (p.Group == null || p.Group == g) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
@@ -158,8 +160,8 @@ namespace Kazetta
 
         private void ExtraPostprocess()
 		{
-            var solfeggioTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Name == "Bartal Ági"));
-            var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Name == "Vadász Gellért"));
+            var solfeggioTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Solfeggio));
+            var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Improv));
             foreach (Group g in d.Schedule[solfeggioTeacherIndex])
 			{
                 if (g.Persons.Any())

@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Kazetta
 {
-	public enum Instrument { Guitar, Keyboards, Bass, Percussion, Solo, Voice }
+	public enum Instrument { Guitar, Keyboards, Bass, Percussion, Solfeggio, Improv, Voice }
 	public enum Level { Beginner, Intermediate, Advanced }
 	public enum Sex { Male, Female }
 
