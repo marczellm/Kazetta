@@ -23,8 +23,6 @@ namespace Kazetta.ViewModel
 		public bool MagicPossible { get => magicPossible; set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
 		public bool MagicEnabled => MagicAllowed && MagicPossible;
 
-		public bool AdvancedGuitarists { get; set; }
-
 		private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			RaisePropertyChanged("PeopleNotEmpty");

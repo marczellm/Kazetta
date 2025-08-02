@@ -17,7 +17,8 @@ namespace Kazetta
 			var mapping = new List<KeyValuePair<string, Instrument>>
 			{// Order is important
                 new KeyValuePair<string, Instrument> ("basszusgitár", Instrument.Bass),
-				new KeyValuePair<string, Instrument> ("gitár", Instrument.Guitar),
+                new KeyValuePair<string, Instrument> ("elektr", Instrument.ElectricGuitar),
+                new KeyValuePair<string, Instrument> ("gitár", Instrument.Guitar),
 				new KeyValuePair<string, Instrument> ("ének", Instrument.Voice),
 				new KeyValuePair<string, Instrument> ("ukulele", Instrument.Voice), // we have no ukulele teacher
                 new KeyValuePair<string, Instrument> ("zongora", Instrument.Keyboards),

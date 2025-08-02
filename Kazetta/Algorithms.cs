@@ -67,21 +67,6 @@ namespace Kazetta
                 kesz = true;
                 Shuffle(Beosztando);
 
-                // Put advanced guitarists first.
-                bool isAdvancedGuitarist(Group g) {
-                    Student p = g.Persons[0];
-                    return p.Instrument == Instrument.Guitar && p.SkillLevel == Level.Advanced;
-                };
-
-                if (d.AdvancedGuitarists)
-                {
-                    foreach (Group g in Beosztando.Where(g => isAdvancedGuitarist(g)).ToList())
-                    {
-                        Beosztando.Remove(g);
-                        Beosztando.Insert(0, g);
-                    }
-                }
-
                 // Put people with vocal teacher preferences first.
                 foreach (Group g in Beosztando.Where(g => g.Persons.Length == 1 && g.Persons[0].PreferredVocalTeachers.Any(x => x != null)).ToList())
                 {
@@ -98,8 +83,8 @@ namespace Kazetta
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
                                       from j in Enumerable.Range(0, 7)
                                       where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
-                                      orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
                                       orderby SexBasedTeacherPreference(p, d.Teachers[i])
+                                      orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
                                       select (i, j);
 
                         if (options.Any())
@@ -129,9 +114,6 @@ namespace Kazetta
                         if (p.Instrument == Instrument.Voice)
                             options = options.OrderBy(tup => SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[tup.i])).OrderBy(tup => SexBasedTeacherPreference(p, d.Teachers[tup.i]));
 
-                        if (d.AdvancedGuitarists && isAdvancedGuitarist(g))
-                            options = options.Where(tup => d.Teachers[tup.i].Name == "Gyarmati Fanny");
-
                         if (g.Persons.Any(q => q.VocalTeacher?.Name == "Szinnyai Dóri")) // They have to be free in the first 2 timeslots
                             options = options.Where(tup => tup.j > 1);
 
@@ -153,22 +135,26 @@ namespace Kazetta
             }
             if (kesz)
 			{
-                ExtraPostprocess();
+                ExtraPostprocess(d);
 			}
             return kesz;
         }
 
-        private void ExtraPostprocess()
+        public static void ExtraPostprocess(ViewModel.MainWindow d)
 		{
             var solfeggioTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Solfeggio));
             var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Improv));
-            foreach (Group g in d.Schedule[solfeggioTeacherIndex])
+            var solfSchedule = d.Schedule[solfeggioTeacherIndex];
+            var divisor = 7;
+            if (solfSchedule[6].Persons.Count() == 0)
+                divisor = 6;
+            foreach (Group g in solfSchedule)
 			{
                 if (g.Persons.Any())
                 {
-                    var nextTimeSlot = (g.Persons[0].TimeSlot + 1) % 7;
+                    var nextTimeSlot = (g.Persons[0].TimeSlot + 1) % divisor;
                     Debug.Assert(!g.Persons.Any(p => p.VocalTimeSlot == nextTimeSlot));
-                    d.Schedule[improvTeacherIndex][(g.Persons[0].TimeSlot + 1) % 7] = g;
+                    d.Schedule[improvTeacherIndex][(g.Persons[0].TimeSlot + 1) % divisor] = g;
                 }
 			}
         }
