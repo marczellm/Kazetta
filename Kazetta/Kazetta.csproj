@@ -83,9 +83,17 @@
     <Reference Include="Hammer.SpinningWheel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hammer.SpinningWheel.2.0\lib\net40\Hammer.SpinningWheel.dll</HintPath>
     </Reference>
+    <Reference Include="HiraokaHyperTools.PdfSharp-WPF, Version=1.31.7289.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\kenjiuno.PdfSharp-WPF.1.31.7289\lib\net40\HiraokaHyperTools.PdfSharp-WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="HiraokaHyperTools.PdfSharp.Xps, Version=1.1.15.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\kenjiuno.PdfSharp.Xps.1.1.15\lib\net40\HiraokaHyperTools.PdfSharp.Xps.dll</HintPath>
+    </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -213,6 +221,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="PdfSharp.SharpZipLib\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

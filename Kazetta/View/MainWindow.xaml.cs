@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Xps;
+using System.Windows.Xps.Packaging;
 using System.Xml.Serialization;
 
 namespace Kazetta
@@ -95,6 +98,33 @@ namespace Kazetta
 				xs.Serialize(file, viewModel.AppData);
 			}
 		}
+
+		private void Export(object sender, EventArgs e)
+		{
+            var dialog = new SaveFileDialog
+            {
+                Filter = "PDF|*.pdf",
+                DefaultExt = "pdf",
+                AddExtension = true
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+				using (MemoryStream lMemoryStream = new MemoryStream())
+				{
+					using (Package package = Package.Open(lMemoryStream, FileMode.Create))
+					using (XpsDocument doc = new XpsDocument(package))
+					{
+						XpsDocumentWriter writer = XpsDocument.CreateXpsDocumentWriter(doc);
+						writer.Write(Schedule);
+					}
+
+					using (FileStream fileStream = new FileStream(dialog.FileName, FileMode.Create))
+					{
+						PdfSharp.Xps.XpsConverter.Convert(lMemoryStream, fileStream, true);
+					}
+				}
+            }
+        }
 
 		private async void LoadXLS(object sender, RoutedEventArgs e)
 		{

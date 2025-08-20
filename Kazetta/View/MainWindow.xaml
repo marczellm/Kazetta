@@ -150,12 +150,13 @@
                     
                     <Button Content="Törlés" Padding="5" Click="ClearSchedule" DockPanel.Dock="Right"/>
                     <Button Content="Mentés" Padding="5" Click="SaveState" DockPanel.Dock="Right" Name="SaveButton"/>
+                    <Button Content="Export" Padding="5" Click="Export" DockPanel.Dock="Right" Name="ExportButton"/>
                     <hammer:SpinningWheel Radius="9" CircleRadius="2.5" Visibility="Hidden" Name="XLSSavingAnimation" Margin="20,0,20,0" DockPanel.Dock="Right"/>
                 </DockPanel>
                 <StatusBar DockPanel.Dock="Bottom">
                     <StatusBarItem Content="{Binding StatusText}" MinHeight="22"/>
                 </StatusBar>
-                <Grid Name="Schedule">
+                <Grid Name="Schedule" Margin="5,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
@@ -240,7 +241,7 @@
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="8" ItemsSource="{Binding Schedule[18]}" x:Name="kcs19" Header="{Binding Teachers[18]}" Tag="18"/>
                     <view:DnDItemsControl Grid.Row="1" Grid.Column="9" ItemsSource="{Binding Schedule[19]}" x:Name="kcs20" Header="{Binding Teachers[19]}" Tag="19"/>
 					<view:DnDItemsControl Grid.Row="1" Grid.Column="10" ItemsSource="{Binding Schedule[20]}" x:Name="kcs21" Header="{Binding Teachers[20]}" Tag="20"/>
-					<view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="10" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
+					<view:DnDItemsControl Grid.Row="2" Grid.ColumnSpan="12" ItemsSource="{Binding Unscheduled}" x:Name="nokcs"
                                           Visibility="Visible" 
                                           Header="Nincsenek beosztva:"
                                           Pinnable="False">
