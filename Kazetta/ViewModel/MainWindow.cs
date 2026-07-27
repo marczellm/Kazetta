@@ -1,16 +1,18 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
-using System;
 
 namespace Kazetta.ViewModel
 {
-	/// <summary>
-	/// Because this is not an enterprise app, I didn't create the plumbing necessary to have separate ViewModels for each tab.
-	/// Instead I dumped all of the application state in the below class.
-	/// </summary>
-	public class MainWindow : ViewModelBase
+    public enum LessonTypeHint { Vocal, Instrument };
+
+    /// <summary>
+    /// Because this is not an enterprise app, I didn't create the plumbing necessary to have separate ViewModels for each tab.
+    /// Instead I dumped all of the application state in the below class.
+    /// </summary>
+    public class MainWindow : ViewModelBase
 	{
 		/// <summary>
 		/// Most tabs disable if this is false
@@ -22,6 +24,18 @@ namespace Kazetta.ViewModel
 		public bool MagicAllowed { get => magicAllowed; set { magicAllowed = value; RaisePropertyChanged("MagicEnabled"); } }
 		public bool MagicPossible { get => magicPossible; set { magicPossible = value; RaisePropertyChanged(); RaisePropertyChanged("MagicEnabled"); } }
 		public bool MagicEnabled => MagicAllowed && MagicPossible;
+
+		private bool seventhLessonEnabled = false;
+		public bool SeventhLessonEnabled
+		{
+			get => seventhLessonEnabled; set
+			{
+				seventhLessonEnabled = value;
+				RaisePropertyChanged();
+				InitSchedule();
+			}
+		}
+		public int NUM_LESSONS { get { return SeventhLessonEnabled ? 7 : 6; } }
 
 		private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -92,8 +106,8 @@ namespace Kazetta.ViewModel
 			foreach (var t in Teachers)
 			{
 				var students = Students.Where(p => p.Teacher == t || p.VocalTeacher == t).ToList();
-				Group[] groups = new Group[7];
-				for (int i = 0; i < 7; i++)
+				Group[] groups = new Group[NUM_LESSONS];
+				for (int i = 0; i < NUM_LESSONS; i++)
 				{
 					groups[i] = new Group { Persons = students.Where(p => (p.Teacher == t && p.TimeSlot == i) || (p.VocalTeacher == t && p.VocalTimeSlot == i)).ToArray() };
 					if (groups[i].Persons.Length > 3)
@@ -206,19 +220,19 @@ namespace Kazetta.ViewModel
 
 			if (Teachers[teacherIndex].IsVocalist && g.Persons.Any(p => p.Instrument == Instrument.Solfeggio))
 			{// we are trying to assign a soloist to their vocal teacher: check that the proposed timeslot does not conflict with their improv lesson
-				ret = ret && !g.Persons.Any(p => timeSlot == (p.TimeSlot + 1) % 7);
+				ret = ret && !g.Persons.Any(p => timeSlot == (p.TimeSlot + 1) % NUM_LESSONS);
 			}
 			else if (Teachers[teacherIndex].Instruments.Contains(Instrument.Solfeggio))
 			{// we are trying to assign a group to the solfeggio teacher at timeSlot; check that the next timeslot is also free for both of them
-				ret = ret && !g.Persons.Any(p => p.TimeSlot == (timeSlot + 1) % 7 || p.VocalTimeSlot == (timeSlot + 1) % 7);
+				ret = ret && !g.Persons.Any(p => p.TimeSlot == (timeSlot + 1) % NUM_LESSONS || p.VocalTimeSlot == (timeSlot + 1) % NUM_LESSONS);
 			}
 
 			return ret;
 		}
 
-		public void AssignTo(Group g, int teacherIndex, int timeSlot, bool overrideTimeSlot = false)
+		public void AssignTo(Group g, int teacherIndex, int timeSlot, LessonTypeHint? lessonTypeHint, bool overrideTimeSlot = false)
 		{
-			AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, overrideTimeSlot);
+			AssignTo(g, null, Schedule[teacherIndex], Teachers[teacherIndex], 0, timeSlot, lessonTypeHint, overrideTimeSlot);
 		}
 
 		public void AssignTo(Group g,
@@ -227,12 +241,13 @@ namespace Kazetta.ViewModel
 			Teacher targetTeacher,
 			int sourceIndex,
 			int targetIndex,
-			bool overrideTimeslot)
+            LessonTypeHint? lessonTypeHint,
+            bool overrideTimeslot)
 		{
 			int i = targetIndex;
 			var p = g.Persons[0];
 
-			if (targetTeacher.Instruments.Contains(p.Instrument))
+			if (targetTeacher.Instruments.Contains(p.Instrument) && lessonTypeHint != LessonTypeHint.Vocal)
 			{
 				if (p.Teacher != null)
 					sourceCollection[sourceIndex] = new Group();
@@ -250,7 +265,7 @@ namespace Kazetta.ViewModel
 					}
 				}
 			}
-			else if (p.IsVocalistToo && targetTeacher.IsVocalist)
+			else if (p.IsVocalistToo && targetTeacher.IsVocalist && lessonTypeHint != LessonTypeHint.Instrument)
 			{
 				if (p.VocalTeacher != null)
 					sourceCollection[sourceIndex] = new Group();
@@ -287,7 +302,7 @@ namespace Kazetta.ViewModel
 			foreach (var coll in Schedule)
 			{
 				coll.Clear();
-				coll.AddRange(Enumerable.Range(0, 7).Select(_ => new Group()));
+				coll.AddRange(Enumerable.Range(0, NUM_LESSONS).Select(_ => new Group()));
 			}
 		}
 

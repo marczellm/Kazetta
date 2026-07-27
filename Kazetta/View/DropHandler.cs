@@ -104,6 +104,7 @@ namespace Kazetta.View
                     targetTeacher,
                     dropInfo.DragInfo.SourceIndex,
                     i,
+                    null,
                     true);
             }
             else if (source.Name.StartsWith("kcs") && target.Name == "nokcs")

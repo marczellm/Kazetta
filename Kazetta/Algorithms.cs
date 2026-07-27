@@ -81,7 +81,7 @@ namespace Kazetta
                     if (g.Persons.Length == 1 && p.IsVocalistToo) // we have to assign to a vocal teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
-                                      from j in Enumerable.Range(0, 7)
+                                      from j in Enumerable.Range(0, d.NUM_LESSONS)
                                       where d.Teachers[i].IsVocalist && d.CanAssign(g, i, j)
                                       orderby SexBasedTeacherPreference(p, d.Teachers[i])
                                       orderby SpecialIndexOf(p.PreferredVocalTeachers, d.Teachers[i])
@@ -91,7 +91,7 @@ namespace Kazetta
                         {
                             var (i, j) = options.First();
                             lock (_lock)
-                                d.AssignTo(g, i, j);
+                                d.AssignTo(g, i, j, ViewModel.LessonTypeHint.Vocal);
                         }
                         else
                         {
@@ -107,7 +107,7 @@ namespace Kazetta
                     if (p.Group == null || p.Group == g) // we have to assign to an instrument teacher
                     {
                         var options = from i in Enumerable.Range(0, d.Teachers.Count)
-                                      from j in Enumerable.Range(0, 7)
+                                      from j in Enumerable.Range(0, d.NUM_LESSONS)
                                       where d.Teachers[i].Instruments.Contains(p.Instrument) && d.CanAssign(g, i, j)
                                       select (i, j);
 
@@ -121,7 +121,7 @@ namespace Kazetta
                         {
                             var (i, j) = options.First();
                             lock (_lock)
-                                d.AssignTo(g, i, j);
+                                d.AssignTo(g, i, j, ViewModel.LessonTypeHint.Instrument);
                         }
                         else
                         {
@@ -145,9 +145,9 @@ namespace Kazetta
             var solfeggioTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Solfeggio));
             var improvTeacherIndex = d.Teachers.IndexOf(d.Teachers.Single(t => t.Instruments.First() == Instrument.Improv));
             var solfSchedule = d.Schedule[solfeggioTeacherIndex];
-            var divisor = 7;
-            if (solfSchedule[6].Persons.Count() == 0)
-                divisor = 6;
+            var divisor = d.NUM_LESSONS;
+            if (solfSchedule[d.NUM_LESSONS - 1].Persons.Count() == 0)
+                divisor --;
             foreach (Group g in solfSchedule)
 			{
                 if (g.Persons.Any())
